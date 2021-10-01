@@ -14,26 +14,33 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team;
+package com.rubbers.team.views.list;
 
-import com.vaadin.flow.theme.Theme;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.vaadin.artur.helpers.LaunchUtil;
+import java.time.LocalDate;
+import java.util.UUID;
 
-import com.vaadin.flow.component.dependency.NpmPackage;
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.server.PWA;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
-@SpringBootApplication
-@Theme(value = "inventa")
-@PWA(name = "Inventa", shortName = "Inventa", offlineResources = {"images/logo.png"})
-@NpmPackage(value = "line-awesome", version = "1.3.0")
-public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
-
-    public static void main(String[] args) {
-        LaunchUtil.launchBrowserInDevelopmentMode(SpringApplication.run(Application.class, args));
-    }
-
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Item {
+    @NonNull
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
+    private String serialNumber;
+    private String description;
+    private LocalDate lastUpdate;
+    private String lastTask;
+    @Builder.Default
+    private int count = 1;
+    private String status;
+    private String location;
+    private String mapLocation;
+    private String issue;
 }
