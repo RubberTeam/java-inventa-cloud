@@ -17,13 +17,19 @@
 package com.rubbers.team.views.list;
 
 import java.time.LocalDate;
+import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.RandomStringUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.val;
 
 @Data
 @Builder
@@ -43,4 +49,57 @@ public class Item {
     private String location;
     private String mapLocation;
     private String issue;
+
+    public static Item getRandom() {
+        return Item.builder()
+                .serialNumber(RandomStringUtils.randomNumeric(10))
+                .description(getRandomDescription())
+                .lastUpdate(getRandomLastDate())
+                .count(getRandomCount())
+                .status(getRandomStatus())
+                .build();
+    }
+
+    private static String getRandomDescription() {
+        val list = Stream.of(
+                        "Пирожок в ресторане", "Коньяк в тумбочке", "Пачка зеленых ручек", "Очень важные бумаги",
+                        "Несуществующая премия", "Минимальный коэффициент премии", "Резиновые люди", "Ктсы за 300",
+                        "Сервисное ядро", "Командировка только после вакцины", "Просто мда", "Ну что тут сказать",
+                        "Теннисный стол шириной в кухню", "Печеньки и кофе за свой счет, вам и так много платят",
+                        "Бог в помощь", "Вам НТ не нужно", "Командировка в питер", "Командировка в Москву",
+                        "РОР не лежит на ИФТ, а устанавливается", "Это у вас проблемы, а не у нас",
+                        "Оценка Б для всей команды", "Никогда не было, и вот опять РОР не отвечает",
+                        "Билет на все конференции JUG.RU, но в следующем году, в этом уже не успеем")
+                .collect(Collectors.toList());
+        return list.get(new Random().nextInt(list.size()));
+    }
+
+    private static LocalDate getRandomLastDate() {
+        val rand = new Random();
+        return LocalDate.of(
+                rand.nextInt((2021 - 2019) + 1) + 2019,
+                rand.nextInt((12 - 1) + 1) + 1,
+                rand.nextInt((25 - 1) + 1) + 1);
+    }
+
+    private static int getRandomCount() {
+        if (new Random().nextInt(3) != 2) {
+            return 1;
+        } else {
+            return new Random().nextInt((1000 - 1) + 1) + 1;
+        }
+    }
+
+    private static String getRandomStatus() {
+        switch (new Random().nextInt(4)) {
+            case 0:
+                return "ok";
+            case 1:
+                return "out of service";
+            case 3:
+                return "issue";
+            default:
+                return "missed";
+        }
+    }
 }

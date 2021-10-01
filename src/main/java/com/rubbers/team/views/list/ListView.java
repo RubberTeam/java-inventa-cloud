@@ -18,6 +18,7 @@ package com.rubbers.team.views.list;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,6 +41,8 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
+
+import lombok.val;
 
 @PermitAll
 @PageTitle("Items")
@@ -86,35 +89,47 @@ public class ListView extends Div {
 
     private void addColumnsToGrid() {
         idColumn = grid.addColumn(Item::getId)
+                .setResizable(true)
                 .setHeader("id")
                 .setAutoWidth(true);
         descriptionColumn = grid.addColumn(Item::getDescription)
+                .setResizable(true)
                 .setHeader("description")
                 .setAutoWidth(true);
         countColumn = grid.addColumn(Item::getCount)
+                .setComparator(Item::getCount)
+                .setResizable(true)
                 .setHeader("count")
                 .setAutoWidth(true);
         statusColumn = grid.addColumn(Item::getStatus)
+                .setComparator(Item::getStatus)
+                .setResizable(true)
                 .setHeader("status")
                 .setAutoWidth(true);
         serialNumberColumn = grid.addColumn(Item::getSerialNumber)
+                .setResizable(true)
                 .setHeader("serial")
                 .setAutoWidth(true);
         lastUpdateColumn = grid.addColumn(
-                new LocalDateRenderer<>(Item::getLastUpdate, DateTimeFormatter.ofPattern("d/M/yyyy")))
+                        new LocalDateRenderer<>(Item::getLastUpdate, DateTimeFormatter.ofPattern("d/M/yyyy")))
                 .setComparator(Item::getLastUpdate)
+                .setResizable(true)
                 .setHeader("updated")
                 .setAutoWidth(true);
         lastTaskColumn = grid.addColumn(Item::getLastTask)
+                .setResizable(true)
                 .setHeader("task")
                 .setAutoWidth(true);
         locationColumn = grid.addColumn(Item::getLocation)
+                .setResizable(true)
                 .setHeader("location")
                 .setAutoWidth(true);
         mapLocationColumn = grid.addColumn(Item::getMapLocation)
+                .setResizable(true)
                 .setHeader("map")
                 .setAutoWidth(true);
         issueColumn = grid.addColumn(Item::getIssue)
+                .setResizable(true)
                 .setHeader("issue")
                 .setAutoWidth(true);
     }
@@ -175,13 +190,63 @@ public class ListView extends Div {
                         item -> StringUtils.containsIgnoreCase(item.getId().toString(), idFilter.getValue())));
         filterRow.getCell(idColumn).setComponent(idFilter);
 
+        final TextField descriptionFilter = new TextField();
+        descriptionFilter.setPlaceholder("Filter");
+        descriptionFilter.setClearButtonVisible(true);
+        descriptionFilter.setWidth("100%");
+        descriptionFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        descriptionFilter.addValueChangeListener(
+                event -> gridListDataView.addFilter(
+                        item -> StringUtils.containsIgnoreCase(item.getDescription(), descriptionFilter.getValue())
+                )
+        );
+        filterRow.getCell(descriptionColumn).setComponent(descriptionFilter);
+
+        final ComboBox<String> statusFilter = new ComboBox<>();
+        statusFilter.setItems(Arrays.asList("ok", "out of service", "issue", "missed"));
+        statusFilter.setPlaceholder("Filter");
+        statusFilter.setClearButtonVisible(true);
+        statusFilter.setWidth("100%");
+        statusFilter.addValueChangeListener(
+                event -> gridListDataView.addFilter(
+                        item -> areStatusesEqual(item, statusFilter)
+                )
+        );
+        filterRow.getCell(statusColumn).setComponent(statusFilter);
+
+        final TextField countFilter = new TextField();
+        countFilter.setPlaceholder("Filter");
+        countFilter.setClearButtonVisible(true);
+        countFilter.setWidth("100%");
+        countFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        countFilter.addValueChangeListener(
+                event -> gridListDataView.addFilter(
+                        item -> item.getCount() == Integer.parseInt(countFilter.getValue())
+                )
+        );
+        filterRow.getCell(countColumn).setComponent(countFilter);
+
+        final TextField serialFilter = new TextField();
+        serialFilter.setPlaceholder("Filter");
+        serialFilter.setClearButtonVisible(true);
+        serialFilter.setWidth("100%");
+        serialFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        serialFilter.addValueChangeListener(
+                event -> gridListDataView.addFilter(
+                        item -> StringUtils.containsIgnoreCase(item.getSerialNumber(), serialFilter.getValue())
+                )
+        );
+        filterRow.getCell(serialNumberColumn).setComponent(serialFilter);
+
         final DatePicker dateFilter = new DatePicker();
-        dateFilter.setPlaceholder("Filter");
+        dateFilter.setPlaceholder("Before");
         dateFilter.setClearButtonVisible(true);
         dateFilter.setWidth("100%");
         dateFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> areDatesEqual(item, dateFilter)));
+                        item -> areDateAfter(item, dateFilter)
+                )
+        );
         filterRow.getCell(lastUpdateColumn).setComponent(dateFilter);
 
         // TextField clientFilter = new TextField();
@@ -212,7 +277,7 @@ public class ListView extends Div {
         // filterRow.getCell(statusColumn).setComponent(statusFilter);
     }
 
-    private boolean areStatusesEqual(Item client, ComboBox<String> statusFilter) {
+    private boolean areStatusesEqual(final Item client, ComboBox<String> statusFilter) {
         String statusFilterValue = statusFilter.getValue();
         if (statusFilterValue != null) {
             return StringUtils.equals(client.getStatus(), statusFilterValue);
@@ -228,33 +293,20 @@ public class ListView extends Div {
         return true;
     }
 
+    private boolean areDateAfter(final Item item, final DatePicker dateFilter) {
+        final LocalDate dateFilterValue = dateFilter.getValue();
+        if (dateFilterValue != null) {
+            return dateFilterValue.isAfter(item.getLastUpdate());
+        }
+        return true;
+    }
+
     private List<Item> getClients() {
-        return Arrays.asList(
-                Item.builder()
-                        .description("UPS блок питания")
-                        .build(),
-                Item.builder()
-                        .description("Ручки фирменные 'Sber'")
-                        .lastUpdate(LocalDate.of(2021, 2, 25))
-                        .count(200)
-                        .build(),
-                Item.builder()
-                        .lastUpdate(LocalDate.of(2021, 6, 15))
-                        .description("Упаковки бумаги a4")
-                        .count(25)
-                        .build(),
-                Item.builder()
-                        .description("Упаковки бумаги a3")
-                        .count(10)
-                        .build(),
-                Item.builder()
-                        .description("Лампы настольного света")
-                        .count(17)
-                        .build(),
-                Item.builder()
-                        .lastUpdate(LocalDate.of(2022, 1, 1))
-                        .description("Твоя премия = 0")
-                        .build());
+        val items = new ArrayList<Item>();
+        for (int i = 0; i < 100; i++) {
+            items.add(Item.getRandom());
+        }
+        return items;
     }
 
 }
