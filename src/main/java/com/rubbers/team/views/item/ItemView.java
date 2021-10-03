@@ -14,21 +14,23 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.data.service;
+package com.rubbers.team.views.item;
 
-import org.springframework.stereotype.Service;
-import org.vaadin.artur.helpers.CrudService;
+import javax.annotation.security.PermitAll;
 
-import com.rubbers.team.data.entity.User;
+import com.rubbers.team.views.MainLayout;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
-@Service
-@AllArgsConstructor
-public class UserService extends CrudService<User, Integer> {
-
-    @Getter
-    private UserRepository repository;
+@Slf4j
+@PermitAll
+@PageTitle("Item")
+@Route(value = "item", layout = MainLayout.class)
+@RouteAlias(value = "item", layout = MainLayout.class)
+public class ItemView extends Div {
 
 }

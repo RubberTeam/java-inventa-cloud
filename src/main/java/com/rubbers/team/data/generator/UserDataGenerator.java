@@ -18,8 +18,6 @@ package com.rubbers.team.data.generator;
 
 import java.util.Collections;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,22 +27,24 @@ import com.rubbers.team.data.entity.User;
 import com.rubbers.team.data.service.UserRepository;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @SpringComponent
-public class DataGenerator {
+public class UserDataGenerator {
 
     @Bean
-    public CommandLineRunner loadData(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public CommandLineRunner loadUserData(PasswordEncoder passwordEncoder, UserRepository userRepository) {
         return args -> {
-            Logger logger = LoggerFactory.getLogger(getClass());
             if (userRepository.count() != 0L) {
-                logger.info("Using existing database");
+                log.info("Using existing database");
                 return;
             }
             int seed = 123;
 
-            logger.info("Generating demo data");
+            log.info("Generating demo data");
 
-            logger.info("... generating 2 User entities...");
+            log.info("... generating 2 User entities...");
             User user = new User();
             user.setName("John Normal");
             user.setUsername("user");
@@ -62,7 +62,7 @@ public class DataGenerator {
             admin.setRoles(Collections.singleton(Role.ADMIN));
             userRepository.save(admin);
 
-            logger.info("Generated demo data");
+            log.info("Generated demo data");
         };
     }
 

@@ -14,25 +14,34 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team;
+package com.rubbers.team.config;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.vaadin.artur.helpers.LaunchUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import com.vaadin.flow.component.dependency.NpmPackage;
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.theme.Theme;
+import com.rubbers.team.data.entity.Item;
+import com.rubbers.team.data.service.ItemRepository;
+import com.rubbers.team.data.service.impl.ItemCrudService;
+import com.rubbers.team.data.service.impl.ItemCrudServiceDataProvider;
+import com.vaadin.flow.data.provider.QuerySortOrder;
 
-@SpringBootApplication
-@Theme(value = "inventa")
-@PWA(name = "Inventa", shortName = "Inventa", offlineResources = {"images/logo.png"})
-@NpmPackage(value = "line-awesome", version = "1.3.0")
-public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
+import lombok.extern.slf4j.Slf4j;
 
-    public static void main(String[] args) {
-        LaunchUtil.launchBrowserInDevelopmentMode(SpringApplication.run(Application.class, args));
+@Slf4j
+// @Configuration
+// @EnableAutoConfiguration
+public class MainConfiguration {
+
+    @Bean
+    ItemCrudService itemCrudService(@Autowired final ItemRepository itemRepository) {
+        return new ItemCrudService(itemRepository);
+    }
+
+    @Bean
+    ItemCrudServiceDataProvider<Item, Void> itemCrudServiceDataProvider(
+            @Autowired final ItemCrudService itemCrudService) {
+        return new ItemCrudServiceDataProvider<>(itemCrudService, QuerySortOrder.desc("id").build());
     }
 }

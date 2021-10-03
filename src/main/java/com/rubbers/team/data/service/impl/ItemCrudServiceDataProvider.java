@@ -14,25 +14,37 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team;
+package com.rubbers.team.data.service.impl;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.vaadin.artur.helpers.LaunchUtil;
+import java.util.List;
+import java.util.UUID;
 
-import com.vaadin.flow.component.dependency.NpmPackage;
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.theme.Theme;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.vaadin.artur.helpers.CrudService;
+import org.vaadin.artur.spring.dataprovider.FilterablePageableDataProvider;
 
-@SpringBootApplication
-@Theme(value = "inventa")
-@PWA(name = "Inventa", shortName = "Inventa", offlineResources = {"images/logo.png"})
-@NpmPackage(value = "line-awesome", version = "1.3.0")
-public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
+import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.QuerySortOrder;
 
-    public static void main(String[] args) {
-        LaunchUtil.launchBrowserInDevelopmentMode(SpringApplication.run(Application.class, args));
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+public class ItemCrudServiceDataProvider<Item, F> extends FilterablePageableDataProvider<Item, F> {
+
+    private final CrudService<Item, UUID> service;
+    @Getter
+    private final List<QuerySortOrder> defaultSortOrders;
+
+    @Override
+    public Page<Item> fetchFromBackEnd(final Query<Item, F> query, final Pageable pageable) {
+        return this.service.list(pageable);
     }
+
+    @Override
+    public int sizeInBackEnd(final Query<Item, F> query) {
+        return this.service.count();
+    }
+
 }

@@ -14,25 +14,22 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team;
+package com.rubbers.team.data.service.impl;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.vaadin.artur.helpers.LaunchUtil;
+import org.springframework.stereotype.Service;
+import org.vaadin.artur.helpers.CrudService;
 
-import com.vaadin.flow.component.dependency.NpmPackage;
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.theme.Theme;
+import com.rubbers.team.data.entity.User;
+import com.rubbers.team.data.service.UserRepository;
 
-@SpringBootApplication
-@Theme(value = "inventa")
-@PWA(name = "Inventa", shortName = "Inventa", offlineResources = {"images/logo.png"})
-@NpmPackage(value = "line-awesome", version = "1.3.0")
-public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    public static void main(String[] args) {
-        LaunchUtil.launchBrowserInDevelopmentMode(SpringApplication.run(Application.class, args));
-    }
+@Service
+@AllArgsConstructor
+public class UserService extends CrudService<User, Integer> {
+
+    @Getter
+    private UserRepository repository;
+
 }

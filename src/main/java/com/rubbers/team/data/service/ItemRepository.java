@@ -14,25 +14,14 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team;
+package com.rubbers.team.data.service;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.vaadin.artur.helpers.LaunchUtil;
+import java.util.UUID;
 
-import com.vaadin.flow.component.dependency.NpmPackage;
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import com.vaadin.flow.server.PWA;
-import com.vaadin.flow.theme.Theme;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@SpringBootApplication
-@Theme(value = "inventa")
-@PWA(name = "Inventa", shortName = "Inventa", offlineResources = {"images/logo.png"})
-@NpmPackage(value = "line-awesome", version = "1.3.0")
-public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
+import com.rubbers.team.data.entity.Item;
 
-    public static void main(String[] args) {
-        LaunchUtil.launchBrowserInDevelopmentMode(SpringApplication.run(Application.class, args));
-    }
+public interface ItemRepository extends JpaRepository<Item, UUID> {
+
 }
