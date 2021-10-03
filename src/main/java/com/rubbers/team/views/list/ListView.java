@@ -191,7 +191,8 @@ public class ListView extends Div {
         countFilter.setValueChangeMode(ValueChangeMode.EAGER);
         countFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> item.getCount() == Integer.parseInt(countFilter.getValue())));
+                        item -> !StringUtils.isBlank(countFilter.getValue()) &&
+                                item.getCount() == Integer.parseInt(countFilter.getValue())));
         filterRow.getCell(countColumn).setComponent(countFilter);
 
         // Точный ильтр по статусу с комбо-боксом
