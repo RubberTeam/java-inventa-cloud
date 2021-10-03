@@ -19,7 +19,7 @@ package com.rubbers.team.data.generator;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 
-import com.rubbers.team.data.entity.Item;
+import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.service.ItemRepository;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 

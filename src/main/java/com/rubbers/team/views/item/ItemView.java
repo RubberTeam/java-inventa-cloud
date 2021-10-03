@@ -28,8 +28,8 @@ import javax.annotation.security.PermitAll;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.rubbers.team.data.entity.Item;
-import com.rubbers.team.data.entity.ItemStatus;
+import com.rubbers.team.data.entity.item.Item;
+import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.views.MainLayout;
 import com.vaadin.flow.component.Component;
@@ -109,7 +109,7 @@ public class ItemView extends Div {
         final TextField uuidField = new TextField("id");
         uuidField.setValue(UUID.randomUUID().toString());
         uuidField.setReadOnly(true);
-        binder.forField(uuidField).bind(x -> x.getId().toString(), (x, y) -> x.setId(UUID.fromString(y)));
+        binder.forField(uuidField).bind(x -> x.getItemId().toString(), (x, y) -> x.setItemId(UUID.fromString(y)));
 
         // private String serialNumber;
         final TextField serialField = new TextField("Serial number");
@@ -169,7 +169,7 @@ public class ItemView extends Div {
                 binder.writeBean(clearItem);
                 itemCrudService.getRepository().save(clearItem);
                 final Notification notification = new Notification(
-                        "Added new item with id " + clearItem.getId(),
+                        "Added new item with id " + clearItem.getItemId(),
                         3000, Notification.Position.BOTTOM_END);
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 notification.open();
@@ -256,7 +256,7 @@ public class ItemView extends Div {
                 }
             }
         });
-        binder.forField(uuidField).bind(x -> x.getId().toString(), (x, y) -> x.setId(UUID.fromString(y)));
+        binder.forField(uuidField).bind(x -> x.getItemId().toString(), (x, y) -> x.setItemId(UUID.fromString(y)));
 
         // private String serialNumber;
         final TextField serialField = new TextField("Serial number");
@@ -316,7 +316,7 @@ public class ItemView extends Div {
                 binder.writeBean(clearItem);
                 itemCrudService.getRepository().save(clearItem);
                 final Notification notification = new Notification(
-                        "Successfully updated item with id " + clearItem.getId(),
+                        "Successfully updated item with id " + clearItem.getItemId(),
                         3000, Notification.Position.BOTTOM_END);
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 notification.open();

@@ -20,7 +20,7 @@ import java.util.UUID;
 
 import org.vaadin.artur.helpers.CrudService;
 
-import com.rubbers.team.data.entity.Item;
+import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.service.ItemRepository;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 

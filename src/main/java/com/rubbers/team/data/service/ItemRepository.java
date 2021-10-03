@@ -20,7 +20,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.rubbers.team.data.entity.Item;
+import com.rubbers.team.data.entity.item.Item;
 
 public interface ItemRepository extends JpaRepository<Item, UUID> {
 

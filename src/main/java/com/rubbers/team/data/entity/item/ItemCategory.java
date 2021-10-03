@@ -14,15 +14,19 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.data.entity;
+package com.rubbers.team.data.entity.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * Энам, описывающий категории объектов для удобства сортировки на стороне приложения
+ */
 @AllArgsConstructor
-public enum ItemStatus {
-    OK("ok"), OUT_OF_SERVICE("out of service"), ISSUE("issue"), MISSED("missed");
+public enum ItemCategory {
+    FURNITURE("Мебель"), OFFICE_SUPPLIES("Канцелярные принадлежности"), OFFICE_EQUIPMENT(
+            "Офисная техника"), FIRE_SAFETY_EQUIPMENT("Средства пожарной безопасности"), OTHER("Прочее");
 
     @Getter
-    private String statusName;
+    private String categoryName;
 }

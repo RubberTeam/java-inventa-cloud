@@ -14,34 +14,15 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.config;
+package com.rubbers.team.data.entity.item;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-import com.rubbers.team.data.entity.Item;
-import com.rubbers.team.data.service.ItemRepository;
-import com.rubbers.team.data.service.impl.ItemCrudService;
-import com.rubbers.team.data.service.impl.ItemCrudServiceDataProvider;
-import com.vaadin.flow.data.provider.QuerySortOrder;
+@AllArgsConstructor
+public enum ItemStatus {
+    OK("ok"), OUT_OF_SERVICE("out of service"), ISSUE("issue"), MISSED("missed");
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-// @Configuration
-// @EnableAutoConfiguration
-public class MainConfiguration {
-
-    @Bean
-    ItemCrudService itemCrudService(@Autowired final ItemRepository itemRepository) {
-        return new ItemCrudService(itemRepository);
-    }
-
-    @Bean
-    ItemCrudServiceDataProvider<Item, Void> itemCrudServiceDataProvider(
-            @Autowired final ItemCrudService itemCrudService) {
-        return new ItemCrudServiceDataProvider<>(itemCrudService, QuerySortOrder.desc("id").build());
-    }
+    @Getter
+    private String statusName;
 }

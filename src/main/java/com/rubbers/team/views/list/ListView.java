@@ -19,15 +19,13 @@ package com.rubbers.team.views.list;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.rubbers.team.data.entity.Item;
-import com.rubbers.team.data.entity.ItemStatus;
+import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
@@ -40,9 +38,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.renderer.LocalDateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
@@ -105,7 +101,7 @@ public class ListView extends Div {
     }
 
     private void addColumnsToGrid() {
-        idColumn = grid.addColumn(Item::getId)
+        idColumn = grid.addColumn(Item::getItemId)
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setResizable(true)
                 .setHeader("id")
@@ -169,7 +165,7 @@ public class ListView extends Div {
         idFilter.setValueChangeMode(ValueChangeMode.EAGER);
         idFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getId().toString(), idFilter.getValue())));
+                        item -> StringUtils.containsIgnoreCase(item.getItemId().toString(), idFilter.getValue())));
         filterRow.getCell(idColumn).setComponent(idFilter);
 
         // Частичный фильтр по описанию

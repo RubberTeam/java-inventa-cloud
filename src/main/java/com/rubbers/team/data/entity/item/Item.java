@@ -14,7 +14,7 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.data.entity;
+package com.rubbers.team.data.entity.item;
 
 import java.time.LocalDate;
 import java.util.Random;
@@ -34,6 +34,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.val;
 
+/**
+ * Сущность объекта, который когда-либо подлежал или будет подлежать инвентаризации
+ */
 @Data
 @Entity
 @Builder
@@ -44,7 +47,9 @@ public class Item {
     @Id
     @NonNull
     @Builder.Default
-    private UUID id = UUID.randomUUID();
+    private UUID itemId = UUID.randomUUID();
+    @Builder.Default
+    private String itemCategory = ItemCategory.OTHER.getCategoryName();
     private String serialNumber;
     private String description;
     private LocalDate lastUpdate;
