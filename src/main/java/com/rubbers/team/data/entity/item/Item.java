@@ -44,32 +44,85 @@ import lombok.val;
 @NoArgsConstructor
 public class Item {
 
+    /**
+     * Соответствует item_ID
+     */
     @Id
     @NonNull
     @Builder.Default
     private UUID itemId = UUID.randomUUID();
+
+    /**
+     * Соответствует Category_Name
+     *
+     * @see ItemCategory
+     */
     @Builder.Default
-    private String itemCategory = ItemCategory.OTHER.getCategoryName();
-    private String serialNumber;
-    private String description;
-    private LocalDate lastUpdate;
-    private String lastTask;
+    private ItemCategory itemCategory = ItemCategory.OTHER;
+
+    /**
+     * Соответствует Task_ID - последний активный таск, в котором велась работы над данным объектом
+     */
+    private String taskId;
+
+    /**
+     * Соответствует Item_Name - имя и описание сущности
+     */
+    private String itemDescription;
+
+    /**
+     * Соответствует Count - количество предметов подразумеваемых под данной сущностью
+     */
     @Builder.Default
-    private int count = 1;
-    private String status;
-    private String location;
-    private String issue;
+    private int itemCount = 1;
+
+    /**
+     * Соответствует Inventory_Number
+     */
+    private String itemInventoryNumber;
+
+    /**
+     * Соответствует Barcode - код, который содержится в баркоде или qr-коде
+     */
+    private String itemCode;
+
+    /**
+     * Соответствует Status - код состояния
+     *
+     * @see ItemStatus
+     */
+    private ItemStatus itemStatus;
+
+    /**
+     * Соответствует 'Adress' - адресу + уточнение локаци, например кабинет и рабочее место
+     */
+    private String itemLocation;
+
+    /**
+     * Дата последнего обновления
+     */
+    private LocalDate itemLastUpdate;
+
+    /**
+     * Какая-либо информация о человеке, ответственном за объект
+     */
+    private String itemOwner;
+
+    /**
+     * Соответствует Comment - подробный текст комментария по проблеме, возможно айдишник на ищью в другой системе
+     */
+    private String itemIssue;
 
     public static Item getRandom() {
         val status = getRandomStatus();
         return Item.builder()
-                .serialNumber(RandomStringUtils.randomNumeric(10))
-                .description(getRandomDescription())
-                .lastUpdate(getRandomLastDate())
-                .count(getRandomCount())
-                .status(status)
-                .issue(getRandomIssueID(status))
-                .location(getRandomLocation())
+                .itemCode(RandomStringUtils.randomNumeric(10))
+                .itemDescription(getRandomDescription())
+                .itemLastUpdate(getRandomLastDate())
+                .itemCount(getRandomCount())
+                .itemStatus(status)
+                .itemIssue(getRandomIssueID(status))
+                .itemLocation(getRandomLocation())
                 .build();
     }
 
@@ -150,24 +203,24 @@ public class Item {
         }
     }
 
-    private static String getRandomStatus() {
+    private static ItemStatus getRandomStatus() {
         switch (new Random().nextInt(4)) {
             case 0:
-                return "ok";
+                return ItemStatus.OK;
             case 1:
-                return "out of service";
+                return ItemStatus.OUT_OF_SERVICE;
             case 3:
-                return "issue";
+                return ItemStatus.ISSUE;
             default:
-                return "missed";
+                return ItemStatus.MISSED;
         }
     }
 
-    private static String getRandomIssueID(final String status) {
+    private static String getRandomIssueID(final ItemStatus status) {
         if (new Random().nextInt(3) != 2) {
             return null;
         } else {
-            if (!status.equalsIgnoreCase("ok")) {
+            if (!status.equals(ItemStatus.OK)) {
                 return "SD" + RandomStringUtils.randomNumeric(10);
             } else {
                 return null;

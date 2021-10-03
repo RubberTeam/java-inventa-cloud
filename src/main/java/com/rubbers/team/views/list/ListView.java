@@ -17,7 +17,6 @@
 package com.rubbers.team.views.list;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Set;
 
 import javax.annotation.security.PermitAll;
@@ -26,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rubbers.team.data.entity.item.Item;
+import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.views.MainLayout;
 import com.vaadin.flow.component.button.Button;
@@ -106,48 +106,48 @@ public class ListView extends Div {
                 .setResizable(true)
                 .setHeader("id")
                 .setAutoWidth(true);
-        descriptionColumn = grid.addColumn(Item::getDescription)
+        descriptionColumn = grid.addColumn(Item::getItemDescription)
                 .setResizable(true)
                 .setHeader("description")
                 .setAutoWidth(true);
-        countColumn = grid.addColumn(Item::getCount)
+        countColumn = grid.addColumn(Item::getItemCount)
                 .setTextAlign(ColumnTextAlign.CENTER)
-                .setComparator(Item::getCount)
+                .setComparator(Item::getItemCount)
                 .setResizable(true)
                 .setHeader("count")
                 .setAutoWidth(true);
-        statusColumn = grid.addColumn(Item::getStatus)
+        statusColumn = grid.addColumn(Item::getItemStatus)
                 .setTextAlign(ColumnTextAlign.CENTER)
-                .setComparator(Item::getStatus)
+                .setComparator(Item::getItemStatus)
                 .setResizable(true)
                 .setHeader("status")
                 .setAutoWidth(true);
-        serialNumberColumn = grid.addColumn(Item::getSerialNumber)
+        serialNumberColumn = grid.addColumn(Item::getItemCode)
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setResizable(true)
                 .setHeader("serial")
                 .setAutoWidth(true);
         lastUpdateColumn = grid.addColumn(
                 new LocalDateRenderer<>(
-                        Item::getLastUpdate,
+                        Item::getItemLastUpdate,
                         DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .setTextAlign(ColumnTextAlign.CENTER)
-                .setComparator(Item::getLastUpdate)
+                .setComparator(Item::getItemLastUpdate)
                 .setResizable(true)
                 .setHeader("updated")
                 .setAutoWidth(true);
-        lastTaskColumn = grid.addColumn(Item::getLastTask)
+        lastTaskColumn = grid.addColumn(Item::getTaskId)
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setResizable(true)
                 .setHeader("task")
                 .setAutoWidth(true);
-        locationColumn = grid.addColumn(Item::getLocation)
+        locationColumn = grid.addColumn(Item::getItemLocation)
                 .setTextAlign(ColumnTextAlign.CENTER)
-                .setComparator(Item::getLocation)
+                .setComparator(Item::getItemLocation)
                 .setResizable(true)
                 .setHeader("location")
                 .setAutoWidth(true);
-        issueColumn = grid.addColumn(Item::getIssue)
+        issueColumn = grid.addColumn(Item::getItemIssue)
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setResizable(true)
                 .setHeader("issue")
@@ -176,7 +176,8 @@ public class ListView extends Div {
         descriptionFilter.setValueChangeMode(ValueChangeMode.EAGER);
         descriptionFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getDescription(), descriptionFilter.getValue())));
+                        item -> StringUtils.containsIgnoreCase(item.getItemDescription(),
+                                descriptionFilter.getValue())));
         filterRow.getCell(descriptionColumn).setComponent(descriptionFilter);
 
         // Точный фильтр по количеству
@@ -187,13 +188,17 @@ public class ListView extends Div {
         countFilter.setValueChangeMode(ValueChangeMode.EAGER);
         countFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> !StringUtils.isBlank(countFilter.getValue()) &&
-                                item.getCount() == Integer.parseInt(countFilter.getValue())));
+                        item -> {
+                            if (StringUtils.isBlank(countFilter.getValue())) {
+                                return true;
+                            }
+                            return item.getItemCount() == Integer.parseInt(countFilter.getValue());
+                        }));
         filterRow.getCell(countColumn).setComponent(countFilter);
 
         // Точный ильтр по статусу с комбо-боксом
-        val statusFilter = new ComboBox<String>();
-        statusFilter.setItems(Arrays.asList("ok", "out of service", "issue", "missed"));
+        val statusFilter = new ComboBox<ItemStatus>();
+        statusFilter.setItems(ItemStatus.values());
         statusFilter.setPlaceholder("Filter");
         statusFilter.setClearButtonVisible(true);
         statusFilter.setWidth("100%");
@@ -202,7 +207,7 @@ public class ListView extends Div {
                         item -> {
                             val statusFilterValue = statusFilter.getValue();
                             if (statusFilterValue != null) {
-                                return StringUtils.equals(item.getStatus(), statusFilterValue);
+                                return item.getItemStatus().equals(statusFilterValue);
                             }
                             return true;
                         }));
@@ -216,7 +221,7 @@ public class ListView extends Div {
         serialFilter.setValueChangeMode(ValueChangeMode.EAGER);
         serialFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getSerialNumber(), serialFilter.getValue())));
+                        item -> StringUtils.containsIgnoreCase(item.getItemCode(), serialFilter.getValue())));
         filterRow.getCell(serialNumberColumn).setComponent(serialFilter);
 
         // Общий фильтр по дате ДО выбранной
@@ -229,7 +234,7 @@ public class ListView extends Div {
                         item -> {
                             val dateFilterValue = dateFilter.getValue();
                             if (dateFilterValue != null) {
-                                return dateFilterValue.isAfter(item.getLastUpdate());
+                                return dateFilterValue.isAfter(item.getItemLastUpdate());
                             }
                             return true;
                         }));
@@ -243,7 +248,7 @@ public class ListView extends Div {
         taskFilter.setValueChangeMode(ValueChangeMode.EAGER);
         taskFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getLastTask(), taskFilter.getValue())));
+                        item -> StringUtils.containsIgnoreCase(item.getTaskId(), taskFilter.getValue())));
         filterRow.getCell(lastTaskColumn).setComponent(taskFilter);
 
         // Частичный фильтр по локации
@@ -254,7 +259,7 @@ public class ListView extends Div {
         locationFilter.setValueChangeMode(ValueChangeMode.EAGER);
         locationFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getLocation(), locationFilter.getValue())));
+                        item -> StringUtils.containsIgnoreCase(item.getItemLocation(), locationFilter.getValue())));
         filterRow.getCell(locationColumn).setComponent(locationFilter);
 
         // Частичный фильтр по ищью
@@ -265,7 +270,7 @@ public class ListView extends Div {
         issueFilter.setValueChangeMode(ValueChangeMode.EAGER);
         issueFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getIssue(), issueFilter.getValue())));
+                        item -> StringUtils.containsIgnoreCase(item.getItemIssue(), issueFilter.getValue())));
         filterRow.getCell(issueColumn).setComponent(issueFilter);
     }
 

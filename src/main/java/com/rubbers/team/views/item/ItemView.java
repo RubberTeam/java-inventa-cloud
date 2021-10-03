@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
 
@@ -34,6 +33,7 @@ import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -41,7 +41,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.IntegerField;
@@ -115,7 +114,7 @@ public class ItemView extends Div {
         final TextField serialField = new TextField("Serial number");
         serialField.setPlaceholder("Write here serial number or specific identifier");
         serialField.setClearButtonVisible(true);
-        binder.forField(serialField).bind(Item::getSerialNumber, Item::setSerialNumber);
+        binder.forField(serialField).bind(Item::getItemCode, Item::setItemCode);
 
         // private String description;
         final TextArea descriptionArea = new TextArea("Description");
@@ -123,45 +122,45 @@ public class ItemView extends Div {
         descriptionArea.setClearButtonVisible(true);
         binder.forField(descriptionArea)
                 .withValidator(x -> !StringUtils.isBlank(x), "Description should not be empty")
-                .bind(Item::getDescription, Item::setDescription);
+                .bind(Item::getItemDescription, Item::setItemDescription);
 
         // private LocalDate lastUpdate;
         final DatePicker datePicker = new DatePicker();
         datePicker.setValue(LocalDate.now());
-        binder.forField(datePicker).bind(Item::getLastUpdate, Item::setLastUpdate);
+        binder.forField(datePicker).bind(Item::getItemLastUpdate, Item::setItemLastUpdate);
 
         // private String lastTask;
         final TextField taskField = new TextField("Task identifier");
         taskField.setPlaceholder("Write here id of the task which the item should have been inventoried");
         taskField.setClearButtonVisible(true);
-        binder.forField(taskField).bind(Item::getLastTask, Item::setLastTask);
+        binder.forField(taskField).bind(Item::getTaskId, Item::setTaskId);
 
         // private int count = 1;
         final IntegerField countField = new IntegerField("Items count");
         countField.setValue(1);
         countField.setMin(1);
         countField.setHasControls(true);
-        binder.forField(countField).bind(Item::getCount, Item::setCount);
+        binder.forField(countField).bind(Item::getItemCount, Item::setItemCount);
 
         // private String status;
         // final ListBox<String> statusBox = new ListBox<>();
         // statusBox.setItems(Stream.of(ItemStatus.values()).map(ItemStatus::getStatusName));
-        final Select<String> statusBox = new Select<>("Status");
-        statusBox.setItems(Stream.of(ItemStatus.values()).map(ItemStatus::getStatusName));
-        statusBox.setValue(ItemStatus.OK.getStatusName());
-        binder.forField(statusBox).bind(Item::getStatus, Item::setStatus);
+        final ComboBox<ItemStatus> statusBox = new ComboBox<>("Status");
+        statusBox.setItems(ItemStatus.values());
+        statusBox.setValue(ItemStatus.OK);
+        binder.forField(statusBox).bind(Item::getItemStatus, Item::setItemStatus);
 
         // private String location;
         final TextField locationField = new TextField("Object location");
         locationField.setPlaceholder("Write here object address and describe how to find it");
         locationField.setClearButtonVisible(true);
-        binder.forField(locationField).bind(Item::getLocation, Item::setLocation);
+        binder.forField(locationField).bind(Item::getItemLocation, Item::setItemLocation);
 
         // private String issue;
         final TextField issueField = new TextField("Issue");
         issueField.setPlaceholder("Write here id of issue or describe what happened with object");
         issueField.setClearButtonVisible(true);
-        binder.forField(issueField).bind(Item::getIssue, Item::setIssue);
+        binder.forField(issueField).bind(Item::getItemIssue, Item::setItemIssue);
 
         final Button createButton = new Button("Create", buttonClickEvent -> {
             final Item clearItem = Item.builder().build();
@@ -262,7 +261,7 @@ public class ItemView extends Div {
         final TextField serialField = new TextField("Serial number");
         serialField.setPlaceholder("Write here serial number or specific identifier");
         serialField.setClearButtonVisible(true);
-        binder.forField(serialField).bind(Item::getSerialNumber, Item::setSerialNumber);
+        binder.forField(serialField).bind(Item::getItemCode, Item::setItemCode);
 
         // private String description;
         final TextArea descriptionArea = new TextArea("Description");
@@ -270,45 +269,44 @@ public class ItemView extends Div {
         descriptionArea.setClearButtonVisible(true);
         binder.forField(descriptionArea)
                 .withValidator(x -> !StringUtils.isBlank(x), "Description should not be empty")
-                .bind(Item::getDescription, Item::setDescription);
+                .bind(Item::getItemDescription, Item::setItemDescription);
 
         // private LocalDate lastUpdate;
         final DatePicker datePicker = new DatePicker();
         datePicker.setValue(LocalDate.now());
-        binder.forField(datePicker).bind(Item::getLastUpdate, Item::setLastUpdate);
+        binder.forField(datePicker).bind(Item::getItemLastUpdate, Item::setItemLastUpdate);
 
         // private String lastTask;
         final TextField taskField = new TextField("Task identifier");
         taskField.setPlaceholder("Write here id of the task which the item should have been inventoried");
         taskField.setClearButtonVisible(true);
-        binder.forField(taskField).bind(Item::getLastTask, Item::setLastTask);
+        binder.forField(taskField).bind(Item::getTaskId, Item::setTaskId);
 
         // private int count = 1;
         final IntegerField countField = new IntegerField("Items count");
         countField.setValue(1);
         countField.setMin(1);
         countField.setHasControls(true);
-        binder.forField(countField).bind(Item::getCount, Item::setCount);
+        binder.forField(countField).bind(Item::getItemCount, Item::setItemCount);
 
         // private String status;
         // final ListBox<String> statusBox = new ListBox<>();
         // statusBox.setItems(Stream.of(ItemStatus.values()).map(ItemStatus::getStatusName));
-        final Select<String> statusBox = new Select<>("Status");
-        statusBox.setItems(Stream.of(ItemStatus.values()).map(ItemStatus::getStatusName));
-        statusBox.setValue(ItemStatus.OK.getStatusName());
-        binder.forField(statusBox).bind(Item::getStatus, Item::setStatus);
+        final ComboBox<ItemStatus> statusBox = new ComboBox<>("Status");
+        statusBox.setItems(ItemStatus.values());
+        binder.forField(statusBox).bind(Item::getItemStatus, Item::setItemStatus);
 
         // private String location;
         final TextField locationField = new TextField("Object location");
         locationField.setPlaceholder("Write here object address and describe how to find it");
         locationField.setClearButtonVisible(true);
-        binder.forField(locationField).bind(Item::getLocation, Item::setLocation);
+        binder.forField(locationField).bind(Item::getItemLocation, Item::setItemLocation);
 
         // private String issue;
         final TextField issueField = new TextField("Issue");
         issueField.setPlaceholder("Write here id of issue or describe what happened with object");
         issueField.setClearButtonVisible(true);
-        binder.forField(issueField).bind(Item::getIssue, Item::setIssue);
+        binder.forField(issueField).bind(Item::getItemIssue, Item::setItemIssue);
 
         final Button saveButton = new Button("Save", buttonClickEvent -> {
             final Item clearItem = Item.builder().build();
