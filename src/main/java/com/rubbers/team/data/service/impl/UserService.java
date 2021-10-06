@@ -19,7 +19,7 @@ package com.rubbers.team.data.service.impl;
 import org.springframework.stereotype.Service;
 import org.vaadin.artur.helpers.CrudService;
 
-import com.rubbers.team.data.entity.User;
+import com.rubbers.team.data.entity.user.User;
 import com.rubbers.team.data.service.UserRepository;
 
 import lombok.AllArgsConstructor;

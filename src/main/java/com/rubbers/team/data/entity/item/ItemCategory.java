@@ -24,14 +24,9 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 public enum ItemCategory {
-    FURNITURE("Мебель"),
-    OFFICE_SUPPLIES("Канцелярные принадлежности"),
-    OFFICE_EQUIPMENT("Офисная техника"),
-    FIRE_SAFETY_EQUIPMENT("Средства пожарной безопасности"),
-    CIPHER_LICENSE("Цифровая лицензия"),
-    REAL_ESTATE("Недвижимость"),
-    GUN("Оружие"),
-    OTHER("Прочее");
+    FURNITURE("Мебель"), OFFICE_SUPPLIES("Канцелярные принадлежности"), OFFICE_EQUIPMENT(
+            "Офисная техника"), FIRE_SAFETY_EQUIPMENT("Средства пожарной безопасности"), CIPHER_LICENSE(
+                    "Цифровая лицензия"), REAL_ESTATE("Недвижимость"), GUN("Оружие"), OTHER("Прочее");
 
     @Getter
     private String categoryName;

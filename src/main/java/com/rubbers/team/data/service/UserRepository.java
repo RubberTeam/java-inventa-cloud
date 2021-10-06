@@ -18,7 +18,7 @@ package com.rubbers.team.data.service;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.rubbers.team.data.entity.User;
+import com.rubbers.team.data.entity.user.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 

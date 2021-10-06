@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.rubbers.team.data.entity.User;
+import com.rubbers.team.data.entity.user.User;
 import com.rubbers.team.security.AuthenticatedUser;
 import com.rubbers.team.views.cardlist.CardListView;
 import com.rubbers.team.views.item.ItemView;

@@ -139,8 +139,8 @@ public class Item {
     private Boolean taskCurrentlyInventoried = false;
 
     /**
-     * Количество предметов подразумеваемых под данной сущностью, соответствует BU_VALUE
-     * (Количество по БУ), по дефолту 1, не может быть меньше 1
+     * Количество предметов подразумеваемых под данной сущностью, соответствует BU_VALUE (Количество по БУ), по дефолту
+     * 1, не может быть меньше 1
      */
     @Min(1)
     @Builder.Default
@@ -189,61 +189,61 @@ public class Item {
 
     private static String getRandomDescription() {
         val list = Stream.of(
-                        "Пирожок в ресторане", "Коньяк в тумбочке", "Пачка зеленых ручек", "Очень важные бумаги",
-                        "Несуществующая премия", "Минимальный коэффициент премии", "Резиновые люди", "Ктсы за 300",
-                        "Сервисное ядро", "Командировка только после вакцины", "Просто мда", "Ну что тут сказать",
-                        "Теннисный стол шириной в кухню", "Печеньки и кофе за свой счет, вам и так много платят",
-                        "Бог в помощь", "Вам НТ не нужно", "Командировка в питер", "Командировка в Москву",
-                        "РОР не лежит на ИФТ, а устанавливается", "Это у вас проблемы, а не у нас",
-                        "Оценка Б для всей команды", "Никогда не было, и вот опять РОР не отвечает",
-                        "Билет на все конференции JUG.RU, но в следующем году, в этом уже не успеем")
+                "Пирожок в ресторане", "Коньяк в тумбочке", "Пачка зеленых ручек", "Очень важные бумаги",
+                "Несуществующая премия", "Минимальный коэффициент премии", "Резиновые люди", "Ктсы за 300",
+                "Сервисное ядро", "Командировка только после вакцины", "Просто мда", "Ну что тут сказать",
+                "Теннисный стол шириной в кухню", "Печеньки и кофе за свой счет, вам и так много платят",
+                "Бог в помощь", "Вам НТ не нужно", "Командировка в питер", "Командировка в Москву",
+                "РОР не лежит на ИФТ, а устанавливается", "Это у вас проблемы, а не у нас",
+                "Оценка Б для всей команды", "Никогда не было, и вот опять РОР не отвечает",
+                "Билет на все конференции JUG.RU, но в следующем году, в этом уже не успеем")
                 .collect(Collectors.toList());
         return list.get(new Random().nextInt(list.size()));
     }
 
     private static String getRandomLocation() {
         val list = Stream.of(
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 6" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 6" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 6" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 6" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 7" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 7" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 7" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 7" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 8" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 8" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 8" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, площадь Фаберже 8, Литера 2, 8" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, Красных Текстильщиков 2, 1" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, Красных Текстильщиков 2, 1" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, Красных Текстильщиков 2, 1" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, Красных Текстильщиков 2, 2" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, Красных Текстильщиков 2, 2" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, Красных Текстильщиков 2, 2" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, Красных Текстильщиков 2, 3" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, Красных Текстильщиков 2, 3" + RandomStringUtils.randomNumeric(2),
-                        "Санкт-Петербург, Красных Текстильщиков 2, 3" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 28" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 28" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 28" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 28" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 29" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 29" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 29" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 29" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 30" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 30" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 30" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 30" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 31" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 31" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 31" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 31" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 32" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 32" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 32" + RandomStringUtils.randomNumeric(2),
-                        "Москва, Кутузовский 32, Литера 1, 32" + RandomStringUtils.randomNumeric(2))
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 6" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 6" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 6" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 6" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 7" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 7" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 7" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 7" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 8" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 8" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 8" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, площадь Фаберже 8, Литера 2, 8" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, Красных Текстильщиков 2, 1" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, Красных Текстильщиков 2, 1" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, Красных Текстильщиков 2, 1" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, Красных Текстильщиков 2, 2" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, Красных Текстильщиков 2, 2" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, Красных Текстильщиков 2, 2" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, Красных Текстильщиков 2, 3" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, Красных Текстильщиков 2, 3" + RandomStringUtils.randomNumeric(2),
+                "Санкт-Петербург, Красных Текстильщиков 2, 3" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 28" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 28" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 28" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 28" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 29" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 29" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 29" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 29" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 30" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 30" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 30" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 30" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 31" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 31" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 31" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 31" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 32" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 32" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 32" + RandomStringUtils.randomNumeric(2),
+                "Москва, Кутузовский 32, Литера 1, 32" + RandomStringUtils.randomNumeric(2))
                 .collect(Collectors.toList());
         return list.get(new Random().nextInt(list.size()));
     }

@@ -14,18 +14,18 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.data.entity.item;
+package com.rubbers.team.data.entity.task;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * Тип ценностного объекта, видимо соответствует справочнику "Для поиска по классу"
+ * Статус бизнес-задачи
  */
 @AllArgsConstructor
-public enum ItemStatus {
-    ON_BUY("Покупка/Поставка"), WAREHOUSE("На складе"), IN_USE("Выдано МОЛу"), ISSUE("Проблема"), OUT_OF_SERVICE(
-            "Списано"), MISSED("Утеряно");
+public enum TaskStatus {
+    CREATED("Создано"), ASSIGNED("Назначено"), SCHEDULED("Запланированно"), IN_PROGRESS("В работе"), ISSUE(
+            "Проблема"), DONE("Завершено");
 
     @Getter
     private String statusName;

@@ -27,7 +27,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.rubbers.team.data.entity.User;
+import com.rubbers.team.data.entity.user.User;
 import com.rubbers.team.data.service.UserRepository;
 
 @Service
