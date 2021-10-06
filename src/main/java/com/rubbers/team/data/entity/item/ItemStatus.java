@@ -21,7 +21,12 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum ItemStatus {
-    OK("ok"), OUT_OF_SERVICE("out of service"), ISSUE("issue"), MISSED("missed");
+    ON_BUY("Покупка/Поставка"),
+    WAREHOUSE("На складе"),
+    IN_USE("Выдано МОЛу"),
+    ISSUE("Проблема"),
+    OUT_OF_SERVICE("Списано"),
+    MISSED("Утеряно");
 
     @Getter
     private String statusName;

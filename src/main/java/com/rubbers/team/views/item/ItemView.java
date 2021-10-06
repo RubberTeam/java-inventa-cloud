@@ -147,7 +147,7 @@ public class ItemView extends Div {
         // statusBox.setItems(Stream.of(ItemStatus.values()).map(ItemStatus::getStatusName));
         final ComboBox<ItemStatus> statusBox = new ComboBox<>("Status");
         statusBox.setItems(ItemStatus.values());
-        statusBox.setValue(ItemStatus.OK);
+        statusBox.setValue(ItemStatus.IN_USE);
         binder.forField(statusBox).bind(Item::getItemStatus, Item::setItemStatus);
 
         // private String location;
