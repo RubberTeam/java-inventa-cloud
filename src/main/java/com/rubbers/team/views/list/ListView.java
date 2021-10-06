@@ -270,7 +270,8 @@ public class ListView extends Div {
         issueFilter.setValueChangeMode(ValueChangeMode.EAGER);
         issueFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getItemIssue(), issueFilter.getValue())));
+                        item -> StringUtils.containsIgnoreCase(item.getItemIssue().getDescription(),
+                                issueFilter.getValue())));
         filterRow.getCell(issueColumn).setComponent(issueFilter);
     }
 

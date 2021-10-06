@@ -157,10 +157,10 @@ public class ItemView extends Div {
         binder.forField(locationField).bind(Item::getItemLocation, Item::setItemLocation);
 
         // private String issue;
-        final TextField issueField = new TextField("Issue");
-        issueField.setPlaceholder("Write here id of issue or describe what happened with object");
-        issueField.setClearButtonVisible(true);
-        binder.forField(issueField).bind(Item::getItemIssue, Item::setItemIssue);
+        // final TextField issueField = new TextField("Issue");
+        // issueField.setPlaceholder("Write here id of issue or describe what happened with object");
+        // issueField.setClearButtonVisible(true);
+        // binder.forField(issueField).bind(Item::getItemIssue, Item::setItemIssue);
 
         final Button createButton = new Button("Create", buttonClickEvent -> {
             final Item clearItem = Item.builder().build();
@@ -202,7 +202,7 @@ public class ItemView extends Div {
                 countField,
                 statusBox,
                 locationField,
-                issueField,
+                // issueField,
                 createButton);
         createPage.add(layout);
     }
@@ -303,10 +303,10 @@ public class ItemView extends Div {
         binder.forField(locationField).bind(Item::getItemLocation, Item::setItemLocation);
 
         // private String issue;
-        final TextField issueField = new TextField("Issue");
-        issueField.setPlaceholder("Write here id of issue or describe what happened with object");
-        issueField.setClearButtonVisible(true);
-        binder.forField(issueField).bind(Item::getItemIssue, Item::setItemIssue);
+        // final TextField issueField = new TextField("Issue");
+        // issueField.setPlaceholder("Write here id of issue or describe what happened with object");
+        // issueField.setClearButtonVisible(true);
+        // binder.forField(issueField).bind(Item::getItemIssue, Item::setItemIssue);
 
         final Button saveButton = new Button("Save", buttonClickEvent -> {
             final Item clearItem = Item.builder().build();
@@ -347,7 +347,7 @@ public class ItemView extends Div {
                 countField,
                 statusBox,
                 locationField,
-                issueField,
+                // issueField,
                 saveButton);
         editPage.add(layout);
     }

@@ -14,37 +14,19 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.data.service.impl;
+package com.rubbers.team.controller.service;
 
 import java.util.List;
-import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.vaadin.artur.helpers.CrudService;
-import org.vaadin.artur.spring.dataprovider.FilterablePageableDataProvider;
+import javax.validation.constraints.NotBlank;
 
-import com.vaadin.flow.data.provider.Query;
-import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.rubbers.team.data.entity.task.Task;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.NonNull;
 
-@AllArgsConstructor
-public class ItemCrudServiceDataProvider<Item, F> extends FilterablePageableDataProvider<Item, F> {
+public interface TaskService {
 
-    private final CrudService<Item, UUID> service;
-    @Getter
-    private final List<QuerySortOrder> defaultSortOrders;
+    List<Task> getTasksByUser(@NotBlank final String user);
 
-    @Override
-    public Page<Item> fetchFromBackEnd(final Query<Item, F> query, final Pageable pageable) {
-        return this.service.list(pageable);
-    }
-
-    @Override
-    public int sizeInBackEnd(final Query<Item, F> query) {
-        return this.service.count();
-    }
-
+    void update(@NonNull final Task task);
 }

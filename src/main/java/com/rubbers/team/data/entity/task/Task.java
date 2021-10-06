@@ -17,12 +17,21 @@
 package com.rubbers.team.data.entity.task;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 
 import org.apache.commons.lang3.RandomStringUtils;
+
+import com.rubbers.team.data.entity.issue.Issue;
+import com.rubbers.team.data.entity.item.Item;
 
 import lombok.*;
 
@@ -49,6 +58,13 @@ public class Task {
      */
     @Builder.Default
     private String businessAdmin = "admin";
+
+    /**
+     * Какие-либо контактные данные для возможного уточнения задачи
+     */
+    @Nullable
+    @Builder.Default
+    private String contactsAdmin = "88005553535 или " + RandomStringUtils.randomAlphabetic(5) + "@sberbank.ru";
 
     /**
      * Ссылка на исполнителя, который в текущий момент назначен на процесс
@@ -81,4 +97,42 @@ public class Task {
      */
     @Builder.Default
     private boolean cipherInventoried = false;
+
+    /**
+     * Время создания бизнес-задачи
+     */
+    @Builder.Default
+    private LocalDateTime creationDateTime = LocalDateTime.now();
+
+    /**
+     * Время назначения бизнес-задачи
+     */
+    @Nullable
+    private LocalDateTime assignedDateTime;
+
+    /**
+     * Время первого события бизнес-задачи
+     */
+    @Nullable
+    private LocalDateTime firstActionDateTime;
+
+    /**
+     * Время завершения бизнесс-задачи
+     */
+    private LocalDateTime endDateTime;
+
+    /**
+     * Список ценностных объектов, участвующих в таске. Не может быть null, может быть пустым, правда в каких случаях?
+     */
+    @NonNull
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Item> items = Collections.emptyList();
+
+    /**
+     * Список проблем, которые возникли в данном бизнесс-процессе
+     */
+    @Builder.Default
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Issue> issues = Collections.emptyList();
 }

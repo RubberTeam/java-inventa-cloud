@@ -23,11 +23,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.RandomStringUtils;
+
+import com.rubbers.team.data.entity.issue.Issue;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -170,9 +173,10 @@ public class Item {
     private LocalDate itemLastUpdate;
 
     /**
-     * Соответствует Comment - подробный текст комментария по проблеме, возможно айдишник на ищью в другой системе
+     * Проблема
      */
-    private String itemIssue;
+    @Nullable
+    private Issue itemIssue;
 
     public static Item getRandom() {
         val status = getRandomStatus();
@@ -182,7 +186,6 @@ public class Item {
                 .itemLastUpdate(getRandomLastDate())
                 .itemCount(getRandomCount())
                 .itemStatus(status)
-                .itemIssue(getRandomIssueID(status))
                 .itemLocation(getRandomLocation())
                 .build();
     }
@@ -267,18 +270,6 @@ public class Item {
     private static ItemStatus getRandomStatus() {
         val statuses = Arrays.asList(ItemStatus.values());
         return statuses.get(new Random().nextInt(statuses.size()));
-    }
-
-    private static String getRandomIssueID(final ItemStatus status) {
-        if (new Random().nextInt(3) != 2) {
-            return null;
-        } else {
-            if (!status.equals(ItemStatus.IN_USE)) {
-                return "SD" + RandomStringUtils.randomNumeric(10);
-            } else {
-                return null;
-            }
-        }
     }
 
 }

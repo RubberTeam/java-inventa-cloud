@@ -16,26 +16,84 @@
  */
 package com.rubbers.team.data.generator;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 
 import com.rubbers.team.data.entity.item.Item;
+import com.rubbers.team.data.entity.task.Task;
+import com.rubbers.team.data.entity.task.TaskStatus;
 import com.rubbers.team.data.service.ItemRepository;
+import com.rubbers.team.data.service.TaskRepository;
 import com.vaadin.flow.spring.annotation.SpringComponent;
 
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 
 @Slf4j
 @SpringComponent
 public class ItemDataGenerator {
 
     @Bean
-    public CommandLineRunner loadData(final ItemRepository itemRepository) {
+    public CommandLineRunner loadData(final ItemRepository itemRepository, final TaskRepository taskRepository) {
         return args -> {
             for (int i = 0; i < 300; i++) {
                 itemRepository.save(Item.getRandom());
             }
             log.info("Generated item list data");
+
+            val items = itemRepository.findAll()
+                    .stream()
+                    .sorted(Comparator.comparing(Item::getItemId))
+                    .collect(Collectors.toList());
+
+            val task1items = new ArrayList<Item>();
+            for (int i = 0; i < 5; i++) {
+                task1items.add(items.get(new Random().nextInt(100)));
+            }
+            val task1 = Task.builder()
+                    .items(task1items)
+                    .assignedDateTime(LocalDateTime.now())
+                    .taskStatus(TaskStatus.DONE)
+                    .build();
+            taskRepository.save(task1);
+
+            val task2items = new ArrayList<Item>();
+            for (int i = 0; i < 5; i++) {
+                task2items.add(items.get(new Random().nextInt((200 - 100) + 100)));
+            }
+            val task2 = Task.builder()
+                    .items(task2items)
+                    .assignedDateTime(LocalDateTime.now())
+                    .taskStatus(TaskStatus.DONE)
+                    .build();
+            taskRepository.save(task2);
+
+            val task3items = new ArrayList<Item>();
+            for (int i = 0; i < 10; i++) {
+                task3items.add(items.get(new Random().nextInt((300 - 200) + 200)));
+            }
+            val task3 = Task.builder()
+                    .items(task3items)
+                    .assignedDateTime(LocalDateTime.now())
+                    .taskStatus(TaskStatus.ASSIGNED)
+                    .build();
+            taskRepository.save(task3);
+
+            val task4items = new ArrayList<Item>();
+            for (int i = 0; i < 10; i++) {
+                task4items.add(items.get(new Random().nextInt((300 - 200) + 200)));
+            }
+            val task4 = Task.builder()
+                    .items(task4items)
+                    .taskStatus(TaskStatus.SCHEDULED)
+                    .build();
+            taskRepository.save(task4);
         };
     }
 }
