@@ -19,8 +19,10 @@ package com.rubbers.team;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.Import;
 import org.vaadin.artur.helpers.LaunchUtil;
 
+import com.rubbers.team.controller.BusinessController;
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
@@ -28,6 +30,7 @@ import com.vaadin.flow.theme.Theme;
 
 @SpringBootApplication
 @Theme(value = "inventa")
+@Import(BusinessController.class)
 @PWA(name = "Inventa", shortName = "Inventa", offlineResources = {"images/logo.png"})
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {

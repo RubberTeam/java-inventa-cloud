@@ -21,8 +21,6 @@ import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +28,7 @@ import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.views.MainLayout;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -40,6 +39,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.LocalDateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -75,7 +75,8 @@ public class ListView extends Div {
     private Grid.Column<Item> issueColumn;
 
     private Set<Item> selectedCandidatesForTask;
-    ItemForm itemForm;
+    private ItemForm itemForm;
+    private TaskForm taskForm;
 
     public ListView(@Autowired final ItemCrudService itemCrudService) {
         this.itemCrudService = itemCrudService;
@@ -94,11 +95,20 @@ public class ListView extends Div {
         addContextItems();
     }
 
-    private Component getContent() {
-        HorizontalLayout content = new HorizontalLayout(grid, itemForm);
+    private Component getItemContent() {
+        final HorizontalLayout content = new HorizontalLayout(grid, itemForm);
         content.setFlexGrow(2, grid);
         content.setFlexGrow(1, itemForm);
-        content.addClassNames("content");
+        content.addClassNames("item-content");
+        content.setSizeFull();
+        return content;
+    }
+
+    private Component getTaskContent() {
+        final HorizontalLayout content = new HorizontalLayout(grid, taskForm);
+        content.setFlexGrow(2, grid);
+        content.setFlexGrow(1, taskForm);
+        content.addClassNames("task-content");
         content.setSizeFull();
         return content;
     }
@@ -303,14 +313,16 @@ public class ListView extends Div {
     private void configureForm() {
         itemForm = new ItemForm(itemCrudService, gridListDataView);
         itemForm.setWidth("5em");
+
+        //taskForm = new TaskForm()
     }
 
     private void addContextItems() {
         val contextMenu = new GridContextMenu<>(grid);
-        val editItem = contextMenu.addItem("edit item", event -> add(getContent()));
-        val createItem = contextMenu.addItem("create item", event -> add(getContent()));
-        val createTask = contextMenu.addItem("create task");
-        val refresh = contextMenu.addItem("refresh", event -> gridListDataView.refreshAll());
+        val editItem = contextMenu.addItem("Редактировать", event -> add(getItemContent()));
+        val createItem = contextMenu.addItem("Создать новый объект", event -> add(getItemContent()));
+        val createTask = contextMenu.addItem("Создать новую задачу", event -> add(getTaskContent()));
+        val refresh = contextMenu.addItem("Обновить", event -> gridListDataView.refreshAll());
     }
 
 }

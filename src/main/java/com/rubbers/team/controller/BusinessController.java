@@ -16,7 +16,6 @@
  */
 package com.rubbers.team.controller;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,8 +33,9 @@ import com.rubbers.team.data.service.impl.ItemCrudService;
 
 import lombok.AllArgsConstructor;
 
+@RestController
 @AllArgsConstructor
-@RestController("/task")
+@RequestMapping("/task")
 public class BusinessController {
 
     @Autowired
