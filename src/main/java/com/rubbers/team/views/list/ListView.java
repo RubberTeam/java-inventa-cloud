@@ -21,15 +21,19 @@ import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 
+import com.rubbers.team.views.list.item.ItemDialog;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.service.impl.ItemCrudService;
+import com.rubbers.team.data.service.impl.TaskCrudService;
+import com.rubbers.team.data.service.impl.UserCrudService;
 import com.rubbers.team.views.MainLayout;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.button.Button;
+import com.rubbers.team.views.list.task.TaskDialog;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
@@ -39,7 +43,6 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.LocalDateRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -60,6 +63,8 @@ import lombok.val;
 @RouteAlias(value = "", layout = MainLayout.class)
 public class ListView extends Div {
     private final ItemCrudService itemCrudService;
+    private final UserCrudService userCrudService;
+    private final TaskCrudService taskCrudService;
 
     private Grid<Item> grid;
     private GridListDataView<Item> gridListDataView;
@@ -76,15 +81,16 @@ public class ListView extends Div {
 
     private Item lastSelectedItem;
     private Set<Item> selectedCandidatesForTask;
-    private ItemForm itemForm;
-    private TaskForm taskForm;
 
-    public ListView(@Autowired final ItemCrudService itemCrudService) {
+    public ListView(@Autowired final ItemCrudService itemCrudService,
+                    @Autowired final UserCrudService userCrudService,
+                    @Autowired final TaskCrudService taskCrudService) {
         this.itemCrudService = itemCrudService;
+        this.userCrudService = userCrudService;
+        this.taskCrudService = taskCrudService;
         addClassName("list-view");
         setSizeFull();
         createGrid();
-        configureForm();
         add(grid);
     }
 
@@ -92,26 +98,7 @@ public class ListView extends Div {
         createGridComponent();
         addColumnsToGrid();
         addFiltersToGrid();
-        // addFooterWithButtons();
         addContextItems();
-    }
-
-    private Component getItemContent() {
-        final HorizontalLayout content = new HorizontalLayout(grid, itemForm);
-        content.setFlexGrow(2, grid);
-        content.setFlexGrow(1, itemForm);
-        content.addClassNames("item-content");
-        content.setSizeFull();
-        return content;
-    }
-
-    private Component getTaskContent() {
-        final HorizontalLayout content = new HorizontalLayout(grid, taskForm);
-        content.setFlexGrow(2, grid);
-        content.setFlexGrow(1, taskForm);
-        content.addClassNames("task-content");
-        content.setSizeFull();
-        return content;
     }
 
     private void createGridComponent() {
@@ -122,7 +109,15 @@ public class ListView extends Div {
         grid.asMultiSelect().addValueChangeListener(event -> {
             selectedCandidatesForTask = event.getValue();
             val oldSelected = event.getOldValue();
-            lastSelectedItem = selectedCandidatesForTask.stream().filter(x -> !oldSelected.contains(x)).findAny().get();
+            try {
+                lastSelectedItem = selectedCandidatesForTask.stream()
+                        .filter(x -> !oldSelected.contains(x))
+                        .findAny()
+                        //Значит выделенных айтемов не осталось
+                        .get();
+            } catch (Exception ignored) {
+                lastSelectedItem = null;
+            }
         });
         gridListDataView = grid.setItems(itemCrudService.getRepository().findAll());
     }
@@ -155,9 +150,9 @@ public class ListView extends Div {
                 .setHeader("serial")
                 .setAutoWidth(true);
         lastUpdateColumn = grid.addColumn(
-                new LocalDateRenderer<>(
-                        Item::getItemLastUpdate,
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                        new LocalDateRenderer<>(
+                                Item::getItemLastUpdate,
+                                DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setComparator(Item::getItemLastUpdate)
                 .setResizable(true)
@@ -302,47 +297,31 @@ public class ListView extends Div {
         filterRow.getCell(issueColumn).setComponent(issueFilter);
     }
 
-    // Оно нам нужно вообще?
-    private void addFooterWithButtons() {
-        val taskButton = new Button("Create task", event -> {
-            log.info("Размер выбранного списка: {}", selectedCandidatesForTask.size());
-            // Создать попап окно с предложением ассайна на кого-то
-            // После закрытия окна создать нотификацию в любой из сторон
-        });
-
-        val footerRaw = grid.appendFooterRow();
-        footerRaw.getCell(idColumn).setComponent(taskButton);
-    }
-
-    public void editItem(Item item) {
-        if (item == null) {
-            closeEditor();
-        } else {
-            itemForm.setItem(item);
-            itemForm.setVisible(true);
-            addClassName("editing");
-        }
-    }
-
-    private void configureForm() {
-        itemForm = new ItemForm(itemCrudService, gridListDataView);
-        itemForm.setWidth("5em");
-    }
-
+    @SuppressWarnings("unused")
     private void addContextItems() {
         val contextMenu = new GridContextMenu<>(grid);
-        val editItem = contextMenu.addItem("Редактировать", event -> add(getItemContent()));
-        val createItem = contextMenu.addItem("Создать новый объект", event -> add(getItemContent()));
+        val editItem = contextMenu.addItem("Редактировать", event -> {
+            if (lastSelectedItem == null) {
+                final Notification notification = new Notification(
+                        "Не выбрано ни одного объекта для инициации процесса инвентаризации",
+                        3000,
+                        Notification.Position.BOTTOM_END
+                );
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.open();
+            } else {
+                final ItemDialog itemDialog = new ItemDialog(itemCrudService, userCrudService, gridListDataView, lastSelectedItem);
+                itemDialog.open();
+            }
+        });
+        val createItem = contextMenu.addItem("Создать новый объект", event -> {
+            final ItemDialog itemDialog = new ItemDialog(itemCrudService, userCrudService, gridListDataView, null);
+            itemDialog.open();
+        });
         val createTask = contextMenu.addItem("Создать новую задачу", event -> {
             final TaskDialog dialog = new TaskDialog(taskCrudService, userCrudService, selectedCandidatesForTask);
             dialog.open();
         });
         val refresh = contextMenu.addItem("Обновить", event -> gridListDataView.refreshAll());
-    }
-
-    private void closeEditor() {
-        itemForm.setItem(null);
-        itemForm.setVisible(false);
-        removeClassName("editing");
     }
 }
