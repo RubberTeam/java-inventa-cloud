@@ -16,15 +16,18 @@
  */
 package com.rubbers.team.controller;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
-import com.rubbers.team.data.entity.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.rubbers.team.controller.service.TaskService;
+import com.rubbers.team.data.entity.event.Event;
+import com.rubbers.team.data.entity.item.Item;
+import com.rubbers.team.data.entity.item.ItemCategory;
 import com.rubbers.team.data.entity.task.Task;
 
 import lombok.AllArgsConstructor;
@@ -44,6 +47,18 @@ public class BusinessController {
 
     @PostMapping("/update")
     public void update(@RequestBody @NotBlank final Event task) {
-        //taskService.update(task);
+        // taskService.update(task);
+    }
+
+    @ResponseBody
+    @GetMapping("/getItems")
+    public List<Item> getItemsByFilters(
+            @RequestParam(name = "location", required = false) final String location,
+            @RequestParam(name = "owner", required = false) final String owner,
+            @RequestParam(name = "division", required = false) final String division,
+            @RequestParam(name = "category", required = false) final ItemCategory itemCategory,
+            @RequestParam(name = "inventory", required = false) final String inventoryNumber,
+            @RequestParam(name = "serial", required = false) final String serialNumber) {
+        return Collections.emptyList();
     }
 }
