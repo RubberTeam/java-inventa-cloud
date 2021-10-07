@@ -123,9 +123,7 @@ public class ListView extends Div {
             selectedCandidatesForTask = event.getValue();
             val oldSelected = event.getOldValue();
             lastSelectedItem = selectedCandidatesForTask.stream().filter(x -> !oldSelected.contains(x)).findAny().get();
-            editItem(lastSelectedItem);
         });
-
         gridListDataView = grid.setItems(itemCrudService.getRepository().findAll());
     }
 
@@ -329,15 +327,16 @@ public class ListView extends Div {
     private void configureForm() {
         itemForm = new ItemForm(itemCrudService, gridListDataView);
         itemForm.setWidth("5em");
-
-        // taskForm = new TaskForm()
     }
 
     private void addContextItems() {
         val contextMenu = new GridContextMenu<>(grid);
         val editItem = contextMenu.addItem("Редактировать", event -> add(getItemContent()));
         val createItem = contextMenu.addItem("Создать новый объект", event -> add(getItemContent()));
-        val createTask = contextMenu.addItem("Создать новую задачу", event -> add(getTaskContent()));
+        val createTask = contextMenu.addItem("Создать новую задачу", event -> {
+            final TaskDialog dialog = new TaskDialog(taskCrudService, userCrudService, selectedCandidatesForTask);
+            dialog.open();
+        });
         val refresh = contextMenu.addItem("Обновить", event -> gridListDataView.refreshAll());
     }
 
