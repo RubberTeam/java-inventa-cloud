@@ -57,19 +57,18 @@ public class LeadersView extends Div implements AfterNavigationObserver {
         addTabs();
         configureWeekPage();
         configureMonthPage();
-        grid.setHeight("100%");
-//        grid.setWidth("50%");
+
+    }
+
+    private void configureMonthPage() {
+        grid.setHeight("1000%");
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
         grid.addComponentColumn(person -> createCard(person));
         add(grid);
     }
 
-    private void configureMonthPage() {
-    }
-
     private void configureWeekPage() {
         grid.setHeight("100%");
-//        grid.setWidth("50%");
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
         grid.addComponentColumn(person -> createCard(person));
     }
@@ -153,16 +152,16 @@ public class LeadersView extends Div implements AfterNavigationObserver {
                         "1K"),
                 createPerson("https://randomuser.me/api/portraits/women/42.jpg", "Abagail Libbie", "May 3",
                         "1K"),
-                createPerson("https://randomuser.me/api/portraits/men/24.jpg", "Alberto Raya", "May 3",
-                        "1K"),
-                createPerson("https://randomuser.me/api/portraits/women/24.jpg", "Emmy Elsner", "Apr 22",
-                        "1K"),
-                createPerson("https://randomuser.me/api/portraits/men/76.jpg", "Alf Huncoot", "Apr 21",
-                        "1K"),
-                createPerson("https://randomuser.me/api/portraits/women/76.jpg", "Lidmila Vilensky", "Apr 17",
-                        "1K"),
-                createPerson("https://randomuser.me/api/portraits/men/94.jpg", "Jarrett Cawsey", "Apr 17",
-                        "1K"),
+//                createPerson("https://randomuser.me/api/portraits/men/24.jpg", "Alberto Raya", "May 3",
+//                        "1K"),
+//                createPerson("https://randomuser.me/api/portraits/women/24.jpg", "Emmy Elsner", "Apr 22",
+//                        "1K"),
+//                createPerson("https://randomuser.me/api/portraits/men/76.jpg", "Alf Huncoot", "Apr 21",
+//                        "1K"),
+//                createPerson("https://randomuser.me/api/portraits/women/76.jpg", "Lidmila Vilensky", "Apr 17",
+//                        "1K"),
+//                createPerson("https://randomuser.me/api/portraits/men/94.jpg", "Jarrett Cawsey", "Apr 17",
+//                        "1K"),
                 createPerson("https://randomuser.me/api/portraits/women/94.jpg", "Tania Perfilyeva", "Mar 8",
                         "1K"),
                 createPerson("https://randomuser.me/api/portraits/men/16.jpg", "Ivan Polo", "Mar 5",
