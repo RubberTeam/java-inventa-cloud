@@ -109,8 +109,10 @@ public class ListView extends Div {
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
         grid.asMultiSelect().addValueChangeListener(event -> selectedCandidatesForTask = event.getValue());
-
         gridListDataView = grid.setItems(itemCrudService.getRepository().findAll());
+//        grid.asSingleSelect().addValueChangeListener(event ->
+//                editItem(event.getValue()));
+
     }
 
     private void addColumnsToGrid() {
@@ -300,6 +302,16 @@ public class ListView extends Div {
         footerRaw.getCell(idColumn).setComponent(taskButton);
     }
 
+    public void editItem(Item item) {
+        if (item == null) {
+            closeEditor();
+        } else {
+            itemForm.setItem(item);
+            itemForm.setVisible(true);
+            addClassName("editing");
+        }
+    }
+
     private void configureForm() {
         itemForm = new ItemForm(itemCrudService, gridListDataView);
         itemForm.setWidth("5em");
@@ -313,4 +325,9 @@ public class ListView extends Div {
         val refresh = contextMenu.addItem("refresh", event -> gridListDataView.refreshAll());
     }
 
+    private void closeEditor() {
+        itemForm.setItem(null);
+        itemForm.setVisible(false);
+        removeClassName("editing");
+    }
 }

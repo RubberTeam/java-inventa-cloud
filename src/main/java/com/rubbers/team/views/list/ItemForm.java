@@ -3,6 +3,8 @@ package com.rubbers.team.views.list;
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.service.impl.ItemCrudService;
+import com.vaadin.flow.component.ComponentEvent;
+import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -18,6 +20,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.shared.Registration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -81,8 +84,8 @@ public class ItemForm extends FormLayout {
 
 	private HorizontalLayout createButtonsLayout() {
 		save = new Button("Save", buttonClickEvent -> validateAndSave());
-		delete = new Button("Delete");
-		close = new Button("Cancel");
+		delete = new Button("Delete", buttonClickEvent -> fireEvent(new DeleteEvent(this, item)));
+		close = new Button("Cancel", buttonClickEvent -> closeEditor());
 
 
 		save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -92,6 +95,7 @@ public class ItemForm extends FormLayout {
 		save.addClickShortcut(Key.ENTER);
 		close.addClickShortcut(Key.ESCAPE);
 
+		binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
 		return new HorizontalLayout(save, delete, close);
 	}
 
@@ -102,6 +106,7 @@ public class ItemForm extends FormLayout {
 			itemCrudService.getRepository().save(clearItem);
 			gridListDataView.addItem(clearItem);
 			gridListDataView.refreshItem(clearItem);
+			fireEvent(new SaveEvent(this, item));
 			final Notification notification = new Notification(
 					"Successfully updated item with id " + clearItem.getItemId(),
 					3000, Notification.Position.BOTTOM_END);
@@ -122,5 +127,48 @@ public class ItemForm extends FormLayout {
 			notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			notification.open();
 		}
+	}
+	// Events
+	public static abstract class ItemFormEvent extends ComponentEvent<ItemForm> {
+		private Item item;
+
+		protected ItemFormEvent(ItemForm source, Item item) {
+			super(source, false);
+			this.item = item;
+		}
+
+		public Item getItem() {
+			return item;
+		}
+	}
+	private void closeEditor() {
+		setItem(null);
+		setVisible(false);
+		removeClassName("editing");
+		fireEvent(new CloseEvent(this));
+	}
+
+	public static class SaveEvent extends ItemFormEvent {
+		SaveEvent(ItemForm source, Item item) {
+			super(source, item);
+		}
+	}
+
+	public static class DeleteEvent extends ItemFormEvent {
+		DeleteEvent(ItemForm source, Item item) {
+			super(source, item);
+		}
+
+	}
+
+	public static class CloseEvent extends ItemFormEvent {
+		CloseEvent(ItemForm source) {
+			super(source, null);
+		}
+	}
+
+	public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
+																  ComponentEventListener<T> listener) {
+		return getEventBus().addListener(eventType, listener);
 	}
 }
