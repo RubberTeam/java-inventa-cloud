@@ -144,6 +144,7 @@ public class ItemForm extends FormLayout {
 			notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
 			notification.open();
 		}
+		closeEditor();
 	}
 
 	private void closeEditor() {
