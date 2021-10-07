@@ -28,16 +28,25 @@ import com.rubbers.team.data.entity.task.TaskStatus;
 import com.rubbers.team.data.entity.user.User;
 import com.rubbers.team.data.service.impl.TaskCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Форма для создания тасков из таблицы с ценностными объектами
  */
+@Slf4j
 public class TaskForm extends FormLayout {
     final Binder<Task> binder = new BeanValidationBinder<>(Task.class);
 
@@ -54,20 +63,22 @@ public class TaskForm extends FormLayout {
     private final ComboBox<Integer> fiscalYearPicker = new ComboBox<>(
             "Фискальный год",
             IntStream.range(
-                    LocalDate.now().getYear() - 99,
-                    LocalDate.now().getYear() + 1).boxed()
+                            LocalDate.now().getYear() - 99,
+                            LocalDate.now().getYear() + 1).boxed()
                     .collect(Collectors.toList()));
     private final TextField orderDocument = new TextField("Документ-обоснование");
     private final Checkbox cipher = new Checkbox("Цифровая инвентаризация");
+    private Button save;
+    private Button close;
 
     /**
      * Дефолтный конструктор формы
      *
      * @param taskCrudService сервис, куда сохраним созданный таск
-     * @param items список ценностных объектов для бизнесс-процесса
+     * @param items           список ценностных объектов для бизнесс-процесса
      */
     public TaskForm(final TaskCrudService taskCrudService, final UserCrudService userCrudService,
-            final List<Item> items) {
+                    final List<Item> items) {
         addClassName("task-form");
 
         this.taskCrudService = taskCrudService;
@@ -114,6 +125,65 @@ public class TaskForm extends FormLayout {
 
         cipher.setValue(false);
         binder.forField(cipher).bind(Task::isCipherInventoried, Task::setCipherInventoried);
+
+        add(idField,
+                itemsCount,
+                fromUser,
+                toUser,
+                contactInformation,
+                initialStatus,
+                fiscalYearPicker,
+                orderDocument,
+                cipher,
+                createButtonLayout()
+        );
+    }
+
+    private HorizontalLayout createButtonLayout() {
+        save = new Button("Создать задачу", buttonClickEvent -> validateAndSave());
+        close = new Button("Отмена");
+
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+
+        save.addClickShortcut(Key.ENTER);
+        close.addClickShortcut(Key.ESCAPE);
+
+        return new HorizontalLayout(save, close);
+    }
+
+    private void validateAndSave() {
+        final Task clearItem = Task.builder().build();
+        try {
+            binder.writeBean(clearItem);
+            taskCrudService.getRepository().save(clearItem);
+            final Notification notification = new Notification(
+                    "Задача успешно создана",
+                    3000,
+                    Notification.Position.BOTTOM_END
+            );
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.open();
+        } catch (ValidationException validationException) {
+            final Notification notification = new Notification(
+                    "Ошибка при заполнении данных, проверьте введенные данные!",
+                    3000,
+                    Notification.Position.BOTTOM_END
+            );
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.open();
+        } catch (Exception e) {
+            log.error("Unable to update item in db", e);
+            e.printStackTrace();
+            final Notification notification = new Notification(
+                    "Произошла ошибка: " + e.getMessage()
+                            + ". Убедительно просим обратиться к вашем IT-Администратору",
+                    3000,
+                    Notification.Position.BOTTOM_END
+            );
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.open();
+        }
     }
 
 }

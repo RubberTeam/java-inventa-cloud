@@ -99,8 +99,6 @@ public class ItemForm extends FormLayout {
         binder.readBean(item);
     }
 
-
-
     private HorizontalLayout createButtonsLayout() {
         save = new Button("Save", buttonClickEvent -> validateAndSave());
         delete = new Button("Delete");
@@ -147,19 +145,7 @@ public class ItemForm extends FormLayout {
 			notification.open();
 		}
 	}
-	// Events
-	public static abstract class ItemFormEvent extends ComponentEvent<ItemForm> {
-		private Item item;
 
-		protected ItemFormEvent(ItemForm source, Item item) {
-			super(source, false);
-			this.item = item;
-		}
-
-		public Item getItem() {
-			return item;
-		}
-	}
 	private void closeEditor() {
 		setItem(null);
 		setVisible(false);

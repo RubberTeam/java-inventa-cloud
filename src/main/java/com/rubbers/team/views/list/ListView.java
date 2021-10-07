@@ -74,6 +74,7 @@ public class ListView extends Div {
     private Grid.Column<Item> locationColumn;
     private Grid.Column<Item> issueColumn;
 
+    private Item lastSelectedItem;
     private Set<Item> selectedCandidatesForTask;
     private ItemForm itemForm;
     private TaskForm taskForm;
@@ -118,11 +119,12 @@ public class ListView extends Div {
         grid.setSelectionMode(SelectionMode.MULTI);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
         grid.setHeight("100%");
-        grid.asMultiSelect().addValueChangeListener(event -> selectedCandidatesForTask = event.getValue());
+        grid.asMultiSelect().addValueChangeListener(event -> {
+            selectedCandidatesForTask = event.getValue();
+            val oldSelected = event.getOldValue();
+            lastSelectedItem = selectedCandidatesForTask.stream().filter(x -> !oldSelected.contains(x)).findAny().get();
+        });
         gridListDataView = grid.setItems(itemCrudService.getRepository().findAll());
-//        grid.asSingleSelect().addValueChangeListener(event ->
-//                editItem(event.getValue()));
-
     }
 
     private void addColumnsToGrid() {
@@ -153,9 +155,9 @@ public class ListView extends Div {
                 .setHeader("serial")
                 .setAutoWidth(true);
         lastUpdateColumn = grid.addColumn(
-                new LocalDateRenderer<>(
-                        Item::getItemLastUpdate,
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                        new LocalDateRenderer<>(
+                                Item::getItemLastUpdate,
+                                DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setComparator(Item::getItemLastUpdate)
                 .setResizable(true)
