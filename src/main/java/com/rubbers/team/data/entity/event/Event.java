@@ -19,11 +19,11 @@ package com.rubbers.team.data.entity.event;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.rubbers.team.data.entity.issue.Issue;
 
 import lombok.*;
-
-import javax.annotation.Nullable;
 
 /**
  * Описывает контракт взаимодействия с модильным клиентом
