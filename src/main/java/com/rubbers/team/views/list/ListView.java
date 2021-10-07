@@ -21,6 +21,8 @@ import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -57,240 +59,262 @@ import lombok.val;
 @Route(value = "items", layout = MainLayout.class)
 @RouteAlias(value = "", layout = MainLayout.class)
 public class ListView extends Div {
-    private final ItemCrudService itemCrudService;
+	private final ItemCrudService itemCrudService;
 
-    private Grid<Item> grid;
-    private GridListDataView<Item> gridListDataView;
+	private Grid<Item> grid;
+	private GridListDataView<Item> gridListDataView;
 
-    private Grid.Column<Item> idColumn;
-    private Grid.Column<Item> serialNumberColumn;
-    private Grid.Column<Item> descriptionColumn;
-    private Grid.Column<Item> lastUpdateColumn;
-    private Grid.Column<Item> lastTaskColumn;
-    private Grid.Column<Item> countColumn;
-    private Grid.Column<Item> statusColumn;
-    private Grid.Column<Item> locationColumn;
-    private Grid.Column<Item> issueColumn;
+	private Grid.Column<Item> idColumn;
+	private Grid.Column<Item> serialNumberColumn;
+	private Grid.Column<Item> descriptionColumn;
+	private Grid.Column<Item> lastUpdateColumn;
+	private Grid.Column<Item> lastTaskColumn;
+	private Grid.Column<Item> countColumn;
+	private Grid.Column<Item> statusColumn;
+	private Grid.Column<Item> locationColumn;
+	private Grid.Column<Item> issueColumn;
 
-    private Set<Item> selectedCandidatesForTask;
+	private Set<Item> selectedCandidatesForTask;
 
-    public ListView(@Autowired final ItemCrudService itemCrudService) {
-        this.itemCrudService = itemCrudService;
-        addClassName("list-view");
-        setSizeFull();
-        createGrid();
-        add(grid);
-    }
+	ItemCreateForm itemCreateForm;
 
-    private void createGrid() {
-        createGridComponent();
-        addColumnsToGrid();
-        addFiltersToGrid();
-        // addFooterWithButtons();
-        addContextItems();
-    }
+	public ListView(@Autowired final ItemCrudService itemCrudService) {
+		this.itemCrudService = itemCrudService;
+		addClassName("list-view");
+		setSizeFull();
+		createGrid();
+		configureForm();
+		add(grid);
+	}
 
-    private void createGridComponent() {
-        grid = new Grid<>();
-        grid.setSelectionMode(SelectionMode.MULTI);
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
-        grid.setHeight("100%");
-        grid.asMultiSelect().addValueChangeListener(event -> selectedCandidatesForTask = event.getValue());
+	private void createGrid() {
+		createGridComponent();
+		addColumnsToGrid();
+		addFiltersToGrid();
+		// addFooterWithButtons();
+		addContextItems();
+	}
 
-        gridListDataView = grid.setItems(itemCrudService.getRepository().findAll());
-    }
+	private Component getContent() {
+		HorizontalLayout content = new HorizontalLayout(grid, itemCreateForm);
+		content.setFlexGrow(2, grid);
+		content.setFlexGrow(1, itemCreateForm);
+		content.addClassNames("content");
+		content.setSizeFull();
+		return content;
+	}
 
-    private void addColumnsToGrid() {
-        idColumn = grid.addColumn(Item::getItemId)
-                .setTextAlign(ColumnTextAlign.CENTER)
-                .setResizable(true)
-                .setHeader("id")
-                .setAutoWidth(true);
-        descriptionColumn = grid.addColumn(Item::getItemDescription)
-                .setResizable(true)
-                .setHeader("description")
-                .setAutoWidth(true);
-        countColumn = grid.addColumn(Item::getItemCount)
-                .setTextAlign(ColumnTextAlign.CENTER)
-                .setComparator(Item::getItemCount)
-                .setResizable(true)
-                .setHeader("count")
-                .setAutoWidth(true);
-        statusColumn = grid.addColumn(Item::getItemStatus)
-                .setTextAlign(ColumnTextAlign.CENTER)
-                .setComparator(Item::getItemStatus)
-                .setResizable(true)
-                .setHeader("status")
-                .setAutoWidth(true);
-        serialNumberColumn = grid.addColumn(Item::getItemCode)
-                .setTextAlign(ColumnTextAlign.CENTER)
-                .setResizable(true)
-                .setHeader("serial")
-                .setAutoWidth(true);
-        lastUpdateColumn = grid.addColumn(
-                new LocalDateRenderer<>(
-                        Item::getItemLastUpdate,
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-                .setTextAlign(ColumnTextAlign.CENTER)
-                .setComparator(Item::getItemLastUpdate)
-                .setResizable(true)
-                .setHeader("updated")
-                .setAutoWidth(true);
-        lastTaskColumn = grid.addColumn(Item::getTaskId)
-                .setTextAlign(ColumnTextAlign.CENTER)
-                .setResizable(true)
-                .setHeader("task")
-                .setAutoWidth(true);
-        locationColumn = grid.addColumn(Item::getItemLocation)
-                .setTextAlign(ColumnTextAlign.CENTER)
-                .setComparator(Item::getItemLocation)
-                .setResizable(true)
-                .setHeader("location")
-                .setAutoWidth(true);
-        issueColumn = grid.addColumn(Item::getItemIssue)
-                .setTextAlign(ColumnTextAlign.CENTER)
-                .setResizable(true)
-                .setHeader("issue")
-                .setAutoWidth(true);
-    }
+	private void createGridComponent() {
+		grid = new Grid<>();
+		grid.setSelectionMode(SelectionMode.MULTI);
+		grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_COLUMN_BORDERS);
+		grid.setHeight("100%");
+		grid.asMultiSelect().addValueChangeListener(event -> selectedCandidatesForTask = event.getValue());
 
-    private void addFiltersToGrid() {
-        val filterRow = grid.appendHeaderRow();
+		gridListDataView = grid.setItems(itemCrudService.getRepository().findAll());
+	}
 
-        // Частичный фильтр по ID
-        val idFilter = new TextField();
-        idFilter.setPlaceholder("Filter");
-        idFilter.setClearButtonVisible(true);
-        idFilter.setWidth("100%");
-        idFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        idFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getItemId().toString(), idFilter.getValue())));
-        filterRow.getCell(idColumn).setComponent(idFilter);
+	private void addColumnsToGrid() {
+		idColumn = grid.addColumn(Item::getItemId)
+				.setTextAlign(ColumnTextAlign.CENTER)
+				.setResizable(true)
+				.setHeader("id")
+				.setAutoWidth(true);
+		descriptionColumn = grid.addColumn(Item::getItemDescription)
+				.setResizable(true)
+				.setHeader("description")
+				.setAutoWidth(true);
+		countColumn = grid.addColumn(Item::getItemCount)
+				.setTextAlign(ColumnTextAlign.CENTER)
+				.setComparator(Item::getItemCount)
+				.setResizable(true)
+				.setHeader("count")
+				.setAutoWidth(true);
+		statusColumn = grid.addColumn(Item::getItemStatus)
+				.setTextAlign(ColumnTextAlign.CENTER)
+				.setComparator(Item::getItemStatus)
+				.setResizable(true)
+				.setHeader("status")
+				.setAutoWidth(true);
+		serialNumberColumn = grid.addColumn(Item::getItemCode)
+				.setTextAlign(ColumnTextAlign.CENTER)
+				.setResizable(true)
+				.setHeader("serial")
+				.setAutoWidth(true);
+		lastUpdateColumn = grid.addColumn(
+						new LocalDateRenderer<>(
+								Item::getItemLastUpdate,
+								DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+				.setTextAlign(ColumnTextAlign.CENTER)
+				.setComparator(Item::getItemLastUpdate)
+				.setResizable(true)
+				.setHeader("updated")
+				.setAutoWidth(true);
+		lastTaskColumn = grid.addColumn(Item::getTaskId)
+				.setTextAlign(ColumnTextAlign.CENTER)
+				.setResizable(true)
+				.setHeader("task")
+				.setAutoWidth(true);
+		locationColumn = grid.addColumn(Item::getItemLocation)
+				.setTextAlign(ColumnTextAlign.CENTER)
+				.setComparator(Item::getItemLocation)
+				.setResizable(true)
+				.setHeader("location")
+				.setAutoWidth(true);
+		issueColumn = grid.addColumn(Item::getItemIssue)
+				.setTextAlign(ColumnTextAlign.CENTER)
+				.setResizable(true)
+				.setHeader("issue")
+				.setAutoWidth(true);
+	}
 
-        // Частичный фильтр по описанию
-        val descriptionFilter = new TextField();
-        descriptionFilter.setPlaceholder("Filter");
-        descriptionFilter.setClearButtonVisible(true);
-        descriptionFilter.setWidth("100%");
-        descriptionFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        descriptionFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getItemDescription(),
-                                descriptionFilter.getValue())));
-        filterRow.getCell(descriptionColumn).setComponent(descriptionFilter);
+	private void addFiltersToGrid() {
+		val filterRow = grid.appendHeaderRow();
 
-        // Точный фильтр по количеству
-        val countFilter = new TextField();
-        countFilter.setPlaceholder("Filter");
-        countFilter.setClearButtonVisible(true);
-        countFilter.setWidth("100%");
-        countFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        countFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(
-                        item -> {
-                            if (StringUtils.isBlank(countFilter.getValue())) {
-                                return true;
-                            }
-                            return item.getItemCount() == Integer.parseInt(countFilter.getValue());
-                        }));
-        filterRow.getCell(countColumn).setComponent(countFilter);
+		// Частичный фильтр по ID
+		val idFilter = new TextField();
+		idFilter.setPlaceholder("Filter");
+		idFilter.setClearButtonVisible(true);
+		idFilter.setWidth("100%");
+		idFilter.setValueChangeMode(ValueChangeMode.EAGER);
+		idFilter.addValueChangeListener(
+				event -> gridListDataView.addFilter(
+						item -> StringUtils.containsIgnoreCase(item.getItemId().toString(), idFilter.getValue())));
+		filterRow.getCell(idColumn).setComponent(idFilter);
 
-        // Точный ильтр по статусу с комбо-боксом
-        val statusFilter = new ComboBox<ItemStatus>();
-        statusFilter.setItems(ItemStatus.values());
-        statusFilter.setPlaceholder("Filter");
-        statusFilter.setClearButtonVisible(true);
-        statusFilter.setWidth("100%");
-        statusFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(
-                        item -> {
-                            val statusFilterValue = statusFilter.getValue();
-                            if (statusFilterValue != null) {
-                                return item.getItemStatus().equals(statusFilterValue);
-                            }
-                            return true;
-                        }));
-        filterRow.getCell(statusColumn).setComponent(statusFilter);
+		// Частичный фильтр по описанию
+		val descriptionFilter = new TextField();
+		descriptionFilter.setPlaceholder("Filter");
+		descriptionFilter.setClearButtonVisible(true);
+		descriptionFilter.setWidth("100%");
+		descriptionFilter.setValueChangeMode(ValueChangeMode.EAGER);
+		descriptionFilter.addValueChangeListener(
+				event -> gridListDataView.addFilter(
+						item -> StringUtils.containsIgnoreCase(item.getItemDescription(),
+								descriptionFilter.getValue())));
+		filterRow.getCell(descriptionColumn).setComponent(descriptionFilter);
 
-        // Частичный фильтр по серийному номеру
-        val serialFilter = new TextField();
-        serialFilter.setPlaceholder("Filter");
-        serialFilter.setClearButtonVisible(true);
-        serialFilter.setWidth("100%");
-        serialFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        serialFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getItemCode(), serialFilter.getValue())));
-        filterRow.getCell(serialNumberColumn).setComponent(serialFilter);
+		// Точный фильтр по количеству
+		val countFilter = new TextField();
+		countFilter.setPlaceholder("Filter");
+		countFilter.setClearButtonVisible(true);
+		countFilter.setWidth("5em");
+		countFilter.setValueChangeMode(ValueChangeMode.EAGER);
+		countFilter.addValueChangeListener(
+				event -> gridListDataView.addFilter(
+						item -> {
+							if (StringUtils.isBlank(countFilter.getValue())) {
+								return true;
+							}
+							return item.getItemCount() == Integer.parseInt(countFilter.getValue());
+						}));
+		filterRow.getCell(countColumn).setComponent(countFilter);
 
-        // Общий фильтр по дате ДО выбранной
-        val dateFilter = new DatePicker();
-        dateFilter.setPlaceholder("Before");
-        dateFilter.setClearButtonVisible(true);
-        dateFilter.setWidth("100%");
-        dateFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(
-                        item -> {
-                            val dateFilterValue = dateFilter.getValue();
-                            if (dateFilterValue != null) {
-                                return dateFilterValue.isAfter(item.getItemLastUpdate());
-                            }
-                            return true;
-                        }));
-        filterRow.getCell(lastUpdateColumn).setComponent(dateFilter);
+		// Точный ильтр по статусу с комбо-боксом
+		val statusFilter = new ComboBox<ItemStatus>();
+		statusFilter.setItems(ItemStatus.values());
+		statusFilter.setPlaceholder("Filter");
+		statusFilter.setClearButtonVisible(true);
+		statusFilter.setWidth("10em");
+		statusFilter.addValueChangeListener(
+				event -> gridListDataView.addFilter(
+						item -> {
+							val statusFilterValue = statusFilter.getValue();
+							if (statusFilterValue != null) {
+								return item.getItemStatus().equals(statusFilterValue);
+							}
+							return true;
+						}));
+		filterRow.getCell(statusColumn).setComponent(statusFilter);
 
-        // Частичный фильтр по таскам
-        val taskFilter = new TextField();
-        taskFilter.setPlaceholder("Filter");
-        taskFilter.setClearButtonVisible(true);
-        taskFilter.setWidth("100%");
-        taskFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        taskFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getTaskId(), taskFilter.getValue())));
-        filterRow.getCell(lastTaskColumn).setComponent(taskFilter);
+		// Частичный фильтр по серийному номеру
+		val serialFilter = new TextField();
+		serialFilter.setPlaceholder("Filter");
+		serialFilter.setClearButtonVisible(true);
+		serialFilter.setWidth("100%");
+		serialFilter.setValueChangeMode(ValueChangeMode.EAGER);
+		serialFilter.addValueChangeListener(
+				event -> gridListDataView.addFilter(
+						item -> StringUtils.containsIgnoreCase(item.getItemCode(), serialFilter.getValue())));
+		filterRow.getCell(serialNumberColumn).setComponent(serialFilter);
 
-        // Частичный фильтр по локации
-        val locationFilter = new TextField();
-        locationFilter.setPlaceholder("Filter");
-        locationFilter.setClearButtonVisible(true);
-        locationFilter.setWidth("100%");
-        locationFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        locationFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getItemLocation(), locationFilter.getValue())));
-        filterRow.getCell(locationColumn).setComponent(locationFilter);
+		// Общий фильтр по дате ДО выбранной
+		val dateFilter = new DatePicker();
+		dateFilter.setPlaceholder("Before");
+		dateFilter.setClearButtonVisible(true);
+		dateFilter.setWidth("10em");
+		dateFilter.addValueChangeListener(
+				event -> gridListDataView.addFilter(
+						item -> {
+							val dateFilterValue = dateFilter.getValue();
+							if (dateFilterValue != null) {
+								return dateFilterValue.isAfter(item.getItemLastUpdate());
+							}
+							return true;
+						}));
+		filterRow.getCell(lastUpdateColumn).setComponent(dateFilter);
 
-        // Частичный фильтр по ищью
-        val issueFilter = new TextField();
-        issueFilter.setPlaceholder("Filter");
-        issueFilter.setClearButtonVisible(true);
-        issueFilter.setWidth("100%");
-        issueFilter.setValueChangeMode(ValueChangeMode.EAGER);
-        issueFilter.addValueChangeListener(
-                event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getItemIssue(), issueFilter.getValue())));
-        filterRow.getCell(issueColumn).setComponent(issueFilter);
-    }
+		// Частичный фильтр по таскам
+		val taskFilter = new TextField();
+		taskFilter.setPlaceholder("Filter");
+		taskFilter.setClearButtonVisible(true);
+		taskFilter.setWidth("100%");
+		taskFilter.setValueChangeMode(ValueChangeMode.EAGER);
+		taskFilter.addValueChangeListener(
+				event -> gridListDataView.addFilter(
+						item -> StringUtils.containsIgnoreCase(item.getTaskId(), taskFilter.getValue())));
+		filterRow.getCell(lastTaskColumn).setComponent(taskFilter);
 
-    // Оно нам нужно вообще?
-    private void addFooterWithButtons() {
-        val taskButton = new Button("Create task", event -> {
-            log.info("Размер выбранного списка: {}", selectedCandidatesForTask.size());
-            // Создать попап окно с предложением ассайна на кого-то
-            // После закрытия окна создать нотификацию в любой из сторон
-        });
+		// Частичный фильтр по локации
+		val locationFilter = new TextField();
+		locationFilter.setPlaceholder("Filter");
+		locationFilter.setClearButtonVisible(true);
+		locationFilter.setWidth("100%");
+		locationFilter.setValueChangeMode(ValueChangeMode.EAGER);
+		locationFilter.addValueChangeListener(
+				event -> gridListDataView.addFilter(
+						item -> StringUtils.containsIgnoreCase(item.getItemLocation(), locationFilter.getValue())));
+		filterRow.getCell(locationColumn).setComponent(locationFilter);
 
-        val footerRaw = grid.appendFooterRow();
-        footerRaw.getCell(idColumn).setComponent(taskButton);
-    }
+		// Частичный фильтр по ищью
+		val issueFilter = new TextField();
+		issueFilter.setPlaceholder("Filter");
+		issueFilter.setClearButtonVisible(true);
+		issueFilter.setWidth("25em");
+		issueFilter.setValueChangeMode(ValueChangeMode.EAGER);
+		issueFilter.addValueChangeListener(
+				event -> gridListDataView.addFilter(
+						item -> StringUtils.containsIgnoreCase(item.getItemIssue(), issueFilter.getValue())));
+		filterRow.getCell(issueColumn).setComponent(issueFilter);
+	}
 
-    private void addContextItems() {
-        val contextMenu = new GridContextMenu<>(grid);
-        val editItem = contextMenu.addItem("edit item");
-        val createTask = contextMenu.addItem("create task");
-        val refresh = contextMenu.addItem("refresh", event -> gridListDataView.refreshAll());
-    }
+	// Оно нам нужно вообще?
+	private void addFooterWithButtons() {
+		val taskButton = new Button("Create task", event -> {
+			log.info("Размер выбранного списка: {}", selectedCandidatesForTask.size());
+			// Создать попап окно с предложением ассайна на кого-то
+			// После закрытия окна создать нотификацию в любой из сторон
+		});
 
+		val footerRaw = grid.appendFooterRow();
+		footerRaw.getCell(idColumn).setComponent(taskButton);
+	}
+
+	private void addContextItems() {
+		val contextMenu = new GridContextMenu<>(grid);
+		val editItem = contextMenu.addItem("edit item");
+		val createItem = contextMenu.addItem("create item", event -> add(getContent()));
+		val createTask = contextMenu.addItem("create task");
+		val refresh = contextMenu.addItem("refresh", event -> gridListDataView.refreshAll());
+	}
+
+
+	private void configureForm() {
+		itemCreateForm = new ItemCreateForm(itemCrudService);
+		itemCreateForm.setWidth("5em");
+	}
+
+//	private void updateList() {
+//		grid.setItems(itemCrudService.getRepository().findAll());
+//	}
 }
