@@ -123,7 +123,9 @@ public class ListView extends Div {
             selectedCandidatesForTask = event.getValue();
             val oldSelected = event.getOldValue();
             lastSelectedItem = selectedCandidatesForTask.stream().filter(x -> !oldSelected.contains(x)).findAny().get();
+            editItem(lastSelectedItem);
         });
+
         gridListDataView = grid.setItems(itemCrudService.getRepository().findAll());
     }
 
@@ -155,9 +157,9 @@ public class ListView extends Div {
                 .setHeader("serial")
                 .setAutoWidth(true);
         lastUpdateColumn = grid.addColumn(
-                        new LocalDateRenderer<>(
-                                Item::getItemLastUpdate,
-                                DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                new LocalDateRenderer<>(
+                        Item::getItemLastUpdate,
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setComparator(Item::getItemLastUpdate)
                 .setResizable(true)
