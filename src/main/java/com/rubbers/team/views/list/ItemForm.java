@@ -60,7 +60,6 @@ public class ItemForm extends FormLayout {
     TextField locationField = new TextField("Object location");
     TextField issueField = new TextField("Issue");
     Button save;
-    Button delete;
     Button close;
 
 
@@ -101,19 +100,17 @@ public class ItemForm extends FormLayout {
 
     private HorizontalLayout createButtonsLayout() {
         save = new Button("Save", buttonClickEvent -> validateAndSave());
-        delete = new Button("Delete");
         close = new Button("Cancel", buttonClickEvent -> closeEditor());
 
 
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
         close.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
 
         save.addClickShortcut(Key.ENTER);
         close.addClickShortcut(Key.ESCAPE);
 
 		binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
-		return new HorizontalLayout(save, delete, close);
+		return new HorizontalLayout(save, close);
 	}
 
 	private void validateAndSave() {
