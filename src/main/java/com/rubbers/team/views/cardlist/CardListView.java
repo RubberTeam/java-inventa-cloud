@@ -16,11 +16,13 @@
  */
 package com.rubbers.team.views.cardlist;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.annotation.security.PermitAll;
 
 import com.rubbers.team.data.entity.task.Task;
@@ -211,19 +213,18 @@ public class CardListView extends Div {
     // return p;
     // }
 
+    /**
+     * Метод для получения пользователя для красивого отображения
+     * @param task таск
+     * @return User или
+     */
+    @Nullable
     private User getUserByTask(@NonNull final Task task) {
         final List<User> users = userCrudService.getRepository().findAll();
         final Optional<User> user = users.stream()
                 .filter(x -> x.getUsername().equalsIgnoreCase(task.getAssignedPerformer()))
                 .findFirst();
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            final User blank = new User();
-            blank.setUsername("unassigned");
-            blank.setName("unassigned");
-            return blank;
-        }
+        return user.orElse(null);
     }
 
 }
