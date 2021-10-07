@@ -18,6 +18,8 @@ package com.rubbers.team.views.list;
 
 import java.time.LocalDate;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.service.impl.ItemCrudService;
@@ -41,9 +43,6 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.shared.Registration;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDate;
 
 @Slf4j
 public class ItemForm extends FormLayout {
@@ -109,69 +108,69 @@ public class ItemForm extends FormLayout {
         save.addClickShortcut(Key.ENTER);
         close.addClickShortcut(Key.ESCAPE);
 
-		binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
-		return new HorizontalLayout(save, close);
-	}
+        binder.addStatusChangeListener(e -> save.setEnabled(binder.isValid()));
+        return new HorizontalLayout(save, close);
+    }
 
-	private void validateAndSave() {
-		final Item clearItem = Item.builder().build();
-		try {
-			binder.writeBean(clearItem);
-			itemCrudService.getRepository().save(clearItem);
-			gridListDataView.addItem(clearItem);
-			gridListDataView.refreshItem(clearItem);
-			fireEvent(new SaveEvent(this, item));
-			final Notification notification = new Notification(
-					"Successfully updated item with id " + clearItem.getItemId(),
-					3000, Notification.Position.BOTTOM_END);
-			notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-			notification.open();
-		} catch (ValidationException validationException) {
-			final Notification notification = new Notification(
-					"Validation data error: " + validationException.getMessage(),
-					3000, Notification.Position.BOTTOM_END);
-			notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-			notification.open();
-		} catch (Exception e) {
-			log.error("Unable to update item in db", e);
-			e.printStackTrace();
-			final Notification notification = new Notification(
-					"Error has occurred: " + e.getMessage() + ". Please contact IT-administrator",
-					3000, Notification.Position.BOTTOM_END);
-			notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-			notification.open();
-		}
-		closeEditor();
-	}
+    private void validateAndSave() {
+        final Item clearItem = Item.builder().build();
+        try {
+            binder.writeBean(clearItem);
+            itemCrudService.getRepository().save(clearItem);
+            gridListDataView.addItem(clearItem);
+            gridListDataView.refreshItem(clearItem);
+            fireEvent(new SaveEvent(this, item));
+            final Notification notification = new Notification(
+                    "Successfully updated item with id " + clearItem.getItemId(),
+                    3000, Notification.Position.BOTTOM_END);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            notification.open();
+        } catch (ValidationException validationException) {
+            final Notification notification = new Notification(
+                    "Validation data error: " + validationException.getMessage(),
+                    3000, Notification.Position.BOTTOM_END);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.open();
+        } catch (Exception e) {
+            log.error("Unable to update item in db", e);
+            e.printStackTrace();
+            final Notification notification = new Notification(
+                    "Error has occurred: " + e.getMessage() + ". Please contact IT-administrator",
+                    3000, Notification.Position.BOTTOM_END);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.open();
+        }
+        closeEditor();
+    }
 
-	private void closeEditor() {
-		setItem(null);
-		setVisible(false);
-		removeClassName("editing");
-		fireEvent(new CloseEvent(this));
-	}
+    private void closeEditor() {
+        setItem(null);
+        setVisible(false);
+        removeClassName("editing");
+        fireEvent(new CloseEvent(this));
+    }
 
-	public static class SaveEvent extends ItemFormEvent {
-		SaveEvent(ItemForm source, Item item) {
-			super(source, item);
-		}
-	}
+    public static class SaveEvent extends ItemFormEvent {
+        SaveEvent(ItemForm source, Item item) {
+            super(source, item);
+        }
+    }
 
-	public static class DeleteEvent extends ItemFormEvent {
-		DeleteEvent(ItemForm source, Item item) {
-			super(source, item);
-		}
+    public static class DeleteEvent extends ItemFormEvent {
+        DeleteEvent(ItemForm source, Item item) {
+            super(source, item);
+        }
 
-	}
+    }
 
-	public static class CloseEvent extends ItemFormEvent {
-		CloseEvent(ItemForm source) {
-			super(source, null);
-		}
-	}
+    public static class CloseEvent extends ItemFormEvent {
+        CloseEvent(ItemForm source) {
+            super(source, null);
+        }
+    }
 
-	public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
-																  ComponentEventListener<T> listener) {
-		return getEventBus().addListener(eventType, listener);
-	}
+    public <T extends ComponentEvent<?>> Registration addListener(Class<T> eventType,
+            ComponentEventListener<T> listener) {
+        return getEventBus().addListener(eventType, listener);
+    }
 }

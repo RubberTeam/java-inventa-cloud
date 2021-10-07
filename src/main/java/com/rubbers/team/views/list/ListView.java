@@ -27,11 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.service.impl.ItemCrudService;
+import com.rubbers.team.data.service.impl.TaskCrudService;
+import com.rubbers.team.data.service.impl.UserCrudService;
 import com.rubbers.team.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
@@ -60,6 +63,8 @@ import lombok.val;
 @RouteAlias(value = "", layout = MainLayout.class)
 public class ListView extends Div {
     private final ItemCrudService itemCrudService;
+    private final UserCrudService userCrudService;
+    private final TaskCrudService taskCrudService;
 
     private Grid<Item> grid;
     private GridListDataView<Item> gridListDataView;
@@ -79,8 +84,12 @@ public class ListView extends Div {
     private ItemForm itemForm;
     private TaskForm taskForm;
 
-    public ListView(@Autowired final ItemCrudService itemCrudService) {
+    public ListView(@Autowired final ItemCrudService itemCrudService,
+            @Autowired final UserCrudService userCrudService,
+            @Autowired final TaskCrudService taskCrudService) {
         this.itemCrudService = itemCrudService;
+        this.userCrudService = userCrudService;
+        this.taskCrudService = taskCrudService;
         addClassName("list-view");
         setSizeFull();
         createGrid();
@@ -92,7 +101,6 @@ public class ListView extends Div {
         createGridComponent();
         addColumnsToGrid();
         addFiltersToGrid();
-        // addFooterWithButtons();
         addContextItems();
     }
 
@@ -123,6 +131,7 @@ public class ListView extends Div {
             selectedCandidatesForTask = event.getValue();
             val oldSelected = event.getOldValue();
             lastSelectedItem = selectedCandidatesForTask.stream().filter(x -> !oldSelected.contains(x)).findAny().get();
+            // taskForm.setItems(selectedCandidatesForTask);
         });
         gridListDataView = grid.setItems(itemCrudService.getRepository().findAll());
     }
@@ -155,9 +164,9 @@ public class ListView extends Div {
                 .setHeader("serial")
                 .setAutoWidth(true);
         lastUpdateColumn = grid.addColumn(
-                        new LocalDateRenderer<>(
-                                Item::getItemLastUpdate,
-                                DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                new LocalDateRenderer<>(
+                        Item::getItemLastUpdate,
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setComparator(Item::getItemLastUpdate)
                 .setResizable(true)
@@ -302,18 +311,6 @@ public class ListView extends Div {
         filterRow.getCell(issueColumn).setComponent(issueFilter);
     }
 
-    // Оно нам нужно вообще?
-    private void addFooterWithButtons() {
-        val taskButton = new Button("Create task", event -> {
-            log.info("Размер выбранного списка: {}", selectedCandidatesForTask.size());
-            // Создать попап окно с предложением ассайна на кого-то
-            // После закрытия окна создать нотификацию в любой из сторон
-        });
-
-        val footerRaw = grid.appendFooterRow();
-        footerRaw.getCell(idColumn).setComponent(taskButton);
-    }
-
     public void editItem(Item item) {
         if (item == null) {
             closeEditor();
@@ -327,15 +324,18 @@ public class ListView extends Div {
     private void configureForm() {
         itemForm = new ItemForm(itemCrudService, gridListDataView);
         itemForm.setWidth("5em");
-
-        // taskForm = new TaskForm()
+        // taskForm = new TaskForm(taskCrudService, userCrudService, selectedCandidatesForTask);
+        // taskForm.setWidth("5em");
     }
 
     private void addContextItems() {
         val contextMenu = new GridContextMenu<>(grid);
         val editItem = contextMenu.addItem("Редактировать", event -> add(getItemContent()));
         val createItem = contextMenu.addItem("Создать новый объект", event -> add(getItemContent()));
-        val createTask = contextMenu.addItem("Создать новую задачу", event -> add(getTaskContent()));
+        val createTask = contextMenu.addItem("Создать новую задачу", event -> {
+            final TaskDialog dialog = new TaskDialog(taskCrudService, userCrudService, selectedCandidatesForTask);
+            dialog.open();
+        });
         val refresh = contextMenu.addItem("Обновить", event -> gridListDataView.refreshAll());
     }
 
