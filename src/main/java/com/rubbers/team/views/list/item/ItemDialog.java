@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.service.impl.ItemCrudService;
+import com.rubbers.team.data.service.impl.UserCrudService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -38,27 +39,29 @@ public class ItemDialog extends Dialog {
     /**
      * Базовый конструктор
      *
-     * @param itemCrudService нужен, чтобы через класс ItemForm сохранить в бд и обработать в той форме ошибки
+     * @param itemCrudService  нужен, чтобы через класс ItemForm сохранить в бд и обработать в той форме ошибки
      * @param gridListDataView нужем, чтобы вызвать обновление после диалога
-     * @param item объект для инвенторизации, если null, то форма это диалог для создания
+     * @param item             объект для инвенторизации, если null, то форма это диалог для создания
      */
     public ItemDialog(@NonNull final ItemCrudService itemCrudService,
-            @NonNull final GridListDataView<Item> gridListDataView,
-            @Nullable final Item item) {
-        // final TaskForm taskForm = new TaskForm(taskCrudService, userCrudService, items);
+                      @NonNull final UserCrudService userCrudService,
+                      @NonNull final GridListDataView<Item> gridListDataView,
+                      @Nullable final Item item) {
+        final ItemForm itemForm = new ItemForm(itemCrudService, userCrudService, gridListDataView, item);
 
-        final Button createTaskButton = new Button("Создать объект", event -> {
-            // if (taskForm.validateAndSave()) {
-            // close();
-            // }
-        });
+        final Button createTaskButton = new Button(
+                item == null ? "Создать" : "Сохранить",
+                event -> {
+                    if (itemForm.validateAndSave()) {
+                        close();
+                    }
+                });
         final Button cancelTaskButton = new Button("Отмена", event -> close());
         createTaskButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         final HorizontalLayout buttonLayout = new HorizontalLayout(cancelTaskButton, createTaskButton);
         buttonLayout.getStyle().set("flex-wrap", "wrap");
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
-        // add(taskForm, buttonLayout);
-        add(new FormLayout(), buttonLayout);
+        add(itemForm, buttonLayout);
     }
 }

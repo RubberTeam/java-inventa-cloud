@@ -166,7 +166,6 @@ public class TaskForm extends FormLayout {
             return false;
         } catch (Exception e) {
             log.error("Unexpected exception on task creation", e);
-            e.printStackTrace();
             final Notification notification = new Notification(
                     "Произошла ошибка: " + e.getMessage()
                             + ". Убедительно просим обратиться к вашем IT-Администратору",
