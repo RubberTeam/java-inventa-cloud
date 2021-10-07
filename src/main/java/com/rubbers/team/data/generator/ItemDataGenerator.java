@@ -51,7 +51,7 @@ public class ItemDataGenerator {
                     .collect(Collectors.toList());
 
             val task1 = Task.builder()
-                    //.items(task1items)
+                    // .items(task1items)
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.DONE)
                     .build();
