@@ -21,6 +21,8 @@ import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -73,12 +75,14 @@ public class ListView extends Div {
     private Grid.Column<Item> issueColumn;
 
     private Set<Item> selectedCandidatesForTask;
+    ItemForm itemForm;
 
     public ListView(@Autowired final ItemCrudService itemCrudService) {
         this.itemCrudService = itemCrudService;
         addClassName("list-view");
         setSizeFull();
         createGrid();
+        configureForm();
         add(grid);
     }
 
@@ -88,6 +92,15 @@ public class ListView extends Div {
         addFiltersToGrid();
         // addFooterWithButtons();
         addContextItems();
+    }
+
+    private Component getContent() {
+        HorizontalLayout content = new HorizontalLayout(grid, itemForm);
+        content.setFlexGrow(2, grid);
+        content.setFlexGrow(1, itemForm);
+        content.addClassNames("content");
+        content.setSizeFull();
+        return content;
     }
 
     private void createGridComponent() {
@@ -287,9 +300,15 @@ public class ListView extends Div {
         footerRaw.getCell(idColumn).setComponent(taskButton);
     }
 
+    private void configureForm() {
+        itemForm = new ItemForm(itemCrudService, gridListDataView);
+        itemForm.setWidth("5em");
+    }
+
     private void addContextItems() {
         val contextMenu = new GridContextMenu<>(grid);
-        val editItem = contextMenu.addItem("edit item");
+        val editItem = contextMenu.addItem("edit item", event -> add(getContent()));
+        val createItem = contextMenu.addItem("create item", event -> add(getContent()));
         val createTask = contextMenu.addItem("create task");
         val refresh = contextMenu.addItem("refresh", event -> gridListDataView.refreshAll());
     }
