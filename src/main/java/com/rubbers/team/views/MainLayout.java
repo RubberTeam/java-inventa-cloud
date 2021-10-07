@@ -110,7 +110,7 @@ public class MainLayout extends AppLayout {
         final MenuItemInfo[] menuItems = new MenuItemInfo[] {
                 new MenuItemInfo("Items", "la la-bank", ListView.class),
                 new MenuItemInfo("Item", "la la-archive", ItemView.class),
-                new MenuItemInfo("Tasks", "la la-barcode", CardListView.class)
+                // new MenuItemInfo("Tasks", "la la-barcode", CardListView.class)
         };
 
         final List<RouterLink> links = new ArrayList<>();
