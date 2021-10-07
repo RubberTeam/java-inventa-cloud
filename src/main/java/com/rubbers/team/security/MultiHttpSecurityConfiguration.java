@@ -18,35 +18,64 @@ package com.rubbers.team.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.rubbers.team.views.login.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurityConfigurerAdapter;
 
-@EnableWebSecurity
+/**
+ * Пропускает эндпоинт /task/**, все остальное пробрасывает на авторизацию
+ */
 @Configuration
-public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
+@EnableWebSecurity
+public class MultiHttpSecurityConfiguration {
 
-    public static final String LOGOUT_URL = "/";
+    @Order(1)
+    @Configuration
+    public static class RestSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        @Override
+        public void configure(WebSecurity web) {
+            web.ignoring().antMatchers("/task/**");
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.cors().and().csrf().disable()
+                    .antMatcher("/task/**")
+                    .authorizeRequests()
+                    .antMatchers("/task/**")
+                    .permitAll();
+        }
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        super.configure(http);
-        setLoginView(http, LoginView.class, LOGOUT_URL);
-    }
+    @Order(2)
+    @Configuration
+    public class SecurityConfiguration extends VaadinWebSecurityConfigurerAdapter {
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        super.configure(web);
-        web.ignoring().antMatchers("/images/*.png");
+        public static final String LOGOUT_URL = "/";
+
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            super.configure(http);
+            setLoginView(http, LoginView.class, LOGOUT_URL);
+        }
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            super.configure(web);
+            web.ignoring().antMatchers("/images/*.png");
+        }
     }
 }

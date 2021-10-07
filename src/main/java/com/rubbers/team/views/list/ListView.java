@@ -314,7 +314,7 @@ public class ListView extends Div {
         itemForm = new ItemForm(itemCrudService, gridListDataView);
         itemForm.setWidth("5em");
 
-        //taskForm = new TaskForm()
+        // taskForm = new TaskForm()
     }
 
     private void addContextItems() {
