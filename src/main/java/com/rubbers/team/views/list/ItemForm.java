@@ -18,8 +18,6 @@ package com.rubbers.team.views.list;
 
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.service.impl.ItemCrudService;
@@ -106,7 +104,7 @@ public class ItemForm extends FormLayout {
     private HorizontalLayout createButtonsLayout() {
         save = new Button("Save", buttonClickEvent -> validateAndSave());
         delete = new Button("Delete");
-        close = new Button("Cancel");
+        close = new Button("Cancel", buttonClickEvent -> closeEditor());
 
 
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
