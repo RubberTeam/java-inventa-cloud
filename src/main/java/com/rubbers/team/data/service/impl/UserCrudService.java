@@ -27,7 +27,7 @@ import lombok.Getter;
 
 @Service
 @AllArgsConstructor
-public class UserService extends CrudService<User, Integer> {
+public class UserCrudService extends CrudService<User, Integer> {
 
     @Getter
     private UserRepository repository;

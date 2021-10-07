@@ -18,9 +18,11 @@ package com.rubbers.team.controller;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
+import com.rubbers.team.data.service.impl.ItemCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +40,9 @@ public class BusinessController {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private ItemCrudService itemCrudService;
 
     // @Autowired
     // private EventRepository eventRepository;
@@ -62,7 +67,12 @@ public class BusinessController {
             @RequestParam(name = "division", required = false) final String division,
             @RequestParam(name = "category", required = false) final ItemCategory itemCategory,
             @RequestParam(name = "inventory", required = false) final String inventoryNumber,
-            @RequestParam(name = "serial", required = false) final String serialNumber) {
-        return Collections.emptyList();
+            @RequestParam(name = "serial", required = false) final String serialNumber
+    ) {
+        return itemCrudService.getRepository()
+                .findAll()
+                .stream()
+                .limit(20)
+                .collect(Collectors.toList());
     }
 }
