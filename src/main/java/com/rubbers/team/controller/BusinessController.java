@@ -39,6 +39,9 @@ public class BusinessController {
     @Autowired
     private TaskService taskService;
 
+    // @Autowired
+    // private EventRepository eventRepository;
+
     @ResponseBody
     @GetMapping("/getTasksByUser")
     public List<Task> getTasksByUser(@RequestParam(name = "user") @NotBlank final String user) {
@@ -46,7 +49,8 @@ public class BusinessController {
     }
 
     @PostMapping("/update")
-    public void update(@RequestBody @NotBlank final Event task) {
+    public void update(@RequestBody @NotBlank final Event event) {
+        // eventRepository.save(event);
         // taskService.update(task);
     }
 

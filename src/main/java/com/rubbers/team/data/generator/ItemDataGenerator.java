@@ -51,7 +51,6 @@ public class ItemDataGenerator {
                     .collect(Collectors.toList());
 
             val task1 = Task.builder()
-                    // .items(task1items)
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.DONE)
                     .build();
@@ -66,35 +65,34 @@ public class ItemDataGenerator {
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.DONE)
                     .build();
+            taskRepository.save(task2);
             for (int i = 0; i < 5; i++) {
                 val temp = items.get(new Random().nextInt((200 - 100) + 100));
                 temp.setTaskID(task2.getTaskId());
                 itemRepository.save(temp);
             }
-            taskRepository.save(task2);
 
             val task3 = Task.builder()
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.ASSIGNED)
                     .build();
+            taskRepository.save(task3);
             for (int i = 0; i < 5; i++) {
                 val temp = items.get(new Random().nextInt((300 - 200) + 200));
                 temp.setTaskID(task3.getTaskId());
                 itemRepository.save(temp);
             }
-            taskRepository.save(task3);
-
 
             val task4 = Task.builder()
                     .assignedPerformer("no one")
                     .taskStatus(TaskStatus.SCHEDULED)
                     .build();
+            taskRepository.save(task4);
             for (int i = 0; i < 5; i++) {
                 val temp = items.get(new Random().nextInt((300 - 200) + 200));
                 temp.setTaskID(task4.getTaskId());
                 itemRepository.save(temp);
             }
-            taskRepository.save(task4);
         };
     }
 }
