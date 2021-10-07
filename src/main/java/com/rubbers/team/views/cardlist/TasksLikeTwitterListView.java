@@ -16,15 +16,15 @@
  */
 package com.rubbers.team.views.cardlist;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.annotation.security.PermitAll;
 
+import com.rubbers.team.data.Role;
 import com.rubbers.team.data.entity.task.Task;
 import com.rubbers.team.data.entity.user.User;
 import com.rubbers.team.data.service.impl.IssueCrudService;
@@ -39,44 +39,102 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.AfterNavigationEvent;
-import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-// @PermitAll
-// @PageTitle("Card List")
-// @Route(value = "card-list", layout = MainLayout.class)
-public class CardListView extends Div {
+@PermitAll
+@PageTitle("Tasks")
+@Route(value = "task-list", layout = MainLayout.class)
+public class TasksLikeTwitterListView extends Div {
 
-    final ItemCrudService itemCrudService;
-    final UserCrudService userCrudService;
-    final IssueCrudService issueCrudService;
-    final TaskCrudService taskCrudService;
+    private final ItemCrudService itemCrudService;
+    private final UserCrudService userCrudService;
+    private final IssueCrudService issueCrudService;
+    private final TaskCrudService taskCrudService;
+    private final PasswordEncoder passwordEncoder;
 
-    final Grid<Task> grid = new Grid<>();
+    private final Grid<Task> grid = new Grid<>();
 
-    public CardListView(@NonNull final ItemCrudService itemCrudService,
-            @NonNull final UserCrudService userCrudService,
-            @NonNull final IssueCrudService issueCrudService,
-            @NonNull final TaskCrudService taskCrudService) {
+    public TasksLikeTwitterListView(@Autowired final ItemCrudService itemCrudService,
+                                    @Autowired final UserCrudService userCrudService,
+                                    @Autowired final IssueCrudService issueCrudService,
+                                    @Autowired final TaskCrudService taskCrudService,
+                                    @Autowired final PasswordEncoder passwordEncoder
+    ) {
         this.itemCrudService = itemCrudService;
         this.userCrudService = userCrudService;
         this.taskCrudService = taskCrudService;
         this.issueCrudService = issueCrudService;
+        this.passwordEncoder = passwordEncoder;
 
         addClassName("card-list-view");
         setSizeFull();
         grid.setHeight("100%");
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
-        // grid.addComponentColumn(person -> createTaskInfo(person));
+        grid.addComponentColumn(person -> createTaskInfo(person));
+        grid.setItems(taskCrudService.getRepository().findAll());
         add(grid);
+    }
+
+    private HorizontalLayout createTaskInfo(@NonNull final Task task) {
+        final HorizontalLayout card = new HorizontalLayout();
+        card.addClassName("card");
+        card.setSpacing(false);
+        card.getThemeList().add("spacing-s");
+
+        final User user = getUserByTask(task);
+        final Image image = new Image();
+        image.setSrc(user.getProfilePictureUrl());
+
+        final VerticalLayout description = new VerticalLayout();
+        description.addClassName("description");
+        description.setSpacing(false);
+        description.setPadding(false);
+
+        final HorizontalLayout header = new HorizontalLayout();
+        header.addClassName("header");
+        header.setSpacing(false);
+        header.getThemeList().add("spacing-s");
+
+        final Span name = new Span("Исполнитель: " + user.getName());
+        name.addClassName("name");
+
+        final Span email = new Span(user.getEmail());
+        name.addClassName("email");
+
+        final Span date = new Span(task.getCreationDateTime().format(DateTimeFormatter.ISO_DATE));
+        date.addClassName("date");
+        header.add(name, email, date);
+
+        final Span post = new Span("Задача по " + task.getOrderDocument());
+        post.addClassName("post");
+
+        final HorizontalLayout actions = new HorizontalLayout();
+        actions.addClassName("actions");
+        actions.setSpacing(false);
+        actions.getThemeList().add("spacing-s");
+
+        final Icon taskIcon = VaadinIcon.ARCHIVES.create();
+        taskIcon.addClassName("icon");
+        final Span tasks = new Span(String.valueOf(task.getItems().size()));
+        tasks.addClassName("taskCount");
+
+        final Icon issueIcon = VaadinIcon.AMBULANCE.create();
+        issueIcon.addClassName("icon");
+        final Span issues = new Span(String.valueOf(task.getIssues().size()));
+        issues.addClassName("issueCount");
+
+        actions.add(taskIcon, tasks, issueIcon, issues);
+        description.add(header, post, actions);
+        card.add(image, description);
+
+        return card;
     }
 
     // private HorizontalLayout createTaskInfo(Task Task) {
@@ -215,6 +273,7 @@ public class CardListView extends Div {
 
     /**
      * Метод для получения пользователя для красивого отображения
+     *
      * @param task таск
      * @return User или
      */
@@ -224,7 +283,18 @@ public class CardListView extends Div {
         final Optional<User> user = users.stream()
                 .filter(x -> x.getUsername().equalsIgnoreCase(task.getAssignedPerformer()))
                 .findFirst();
-        return user.orElse(null);
+        return user.orElse(getStubUser());
+    }
+
+    private User getStubUser() {
+        final User user = new User();
+        user.setName("John Normal");
+        user.setUsername("user");
+        user.setEmail("John.Normal@sberbank.ru");
+        user.setHashedPassword(passwordEncoder.encode("user"));
+        user.setProfilePictureUrl("https://randomuser.me/api/portraits/men/42.jpg");
+        user.setRoles(Collections.singleton(Role.USER));
+        return user;
     }
 
 }

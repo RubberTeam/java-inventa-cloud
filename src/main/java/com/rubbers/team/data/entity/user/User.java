@@ -26,8 +26,12 @@ import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rubbers.team.data.AbstractEntity;
 import com.rubbers.team.data.Role;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 public class User extends AbstractEntity {
 
     private String username;
@@ -38,6 +42,7 @@ public class User extends AbstractEntity {
     private Set<Role> roles;
     @Lob
     private String profilePictureUrl;
+    private String email;
 
     public String getUsername() {
         return username;

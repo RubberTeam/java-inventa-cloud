@@ -22,8 +22,7 @@ import java.util.Optional;
 
 import com.rubbers.team.data.entity.user.User;
 import com.rubbers.team.security.AuthenticatedUser;
-import com.rubbers.team.views.cardlist.CardListView;
-import com.rubbers.team.views.item.ItemView;
+import com.rubbers.team.views.cardlist.TasksLikeTwitterListView;
 import com.rubbers.team.views.list.ListView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -109,8 +108,7 @@ public class MainLayout extends AppLayout {
     private List<RouterLink> createLinks() {
         final MenuItemInfo[] menuItems = new MenuItemInfo[] {
                 new MenuItemInfo("Items", "la la-bank", ListView.class),
-                new MenuItemInfo("Item", "la la-archive", ItemView.class),
-                // new MenuItemInfo("Tasks", "la la-barcode", CardListView.class)
+                new MenuItemInfo("Tasks", "la la-barcode", TasksLikeTwitterListView.class)
         };
 
         final List<RouterLink> links = new ArrayList<>();
