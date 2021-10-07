@@ -30,9 +30,19 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
+/**
+ * Диалог с поп-апом, который появляется, когда пользователь выбирает список ценностных объектов и создает задачу
+ */
 @AllArgsConstructor
 public class TaskDialog extends Dialog {
 
+    /**
+     * Базовый конструктор
+     *
+     * @param taskCrudService нужен, чтобы через класс TaskForm сохранить в бд и обработать в той форме ошибки
+     * @param userCrudService нужен, чтобы предоставить пользователей, на которых можно назначить и от кого назначить
+     * @param items объекты для инвенторизации
+     */
     public TaskDialog(@NonNull final TaskCrudService taskCrudService,
             @NonNull final UserCrudService userCrudService,
             @NonNull final Set<Item> items) {
