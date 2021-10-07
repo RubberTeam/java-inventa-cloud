@@ -128,11 +128,11 @@ public class Task {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Item> items = Collections.emptySet();
 
-//    /**
-//     * Список проблем, которые возникли в данном бизнесс-процессе
-//     */
-//    @Builder.Default
-//    @JoinColumn(name = "TASK_ID")
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    private Set<Issue> issues = Collections.emptySet();
+    // /**
+    // * Список проблем, которые возникли в данном бизнесс-процессе
+    // */
+    // @Builder.Default
+    // @JoinColumn(name = "TASK_ID")
+    // @ElementCollection(fetch = FetchType.EAGER)
+    // private Set<Issue> issues = Collections.emptySet();
 }
