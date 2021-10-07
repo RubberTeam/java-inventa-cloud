@@ -14,44 +14,43 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.views.list.task;
+package com.rubbers.team.views.list.item;
 
-import java.util.Set;
+import javax.annotation.Nullable;
 
 import com.rubbers.team.data.entity.item.Item;
-import com.rubbers.team.data.service.impl.TaskCrudService;
-import com.rubbers.team.data.service.impl.UserCrudService;
+import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 /**
- * Диалог с поп-апом, который появляется, когда пользователь выбирает список ценностных объектов и создает задачу
+ * Диалог с поп-апом, который появляется, когда пользователь выбирает в контекстном меню редактирование айтема
  */
-@AllArgsConstructor
-public class TaskDialog extends Dialog {
+public class ItemDialog extends Dialog {
 
     /**
      * Базовый конструктор
      *
-     * @param taskCrudService нужен, чтобы через класс TaskForm сохранить в бд и обработать в той форме ошибки
-     * @param userCrudService нужен, чтобы предоставить пользователей, на которых можно назначить и от кого назначить
-     * @param items объекты для инвенторизации
+     * @param itemCrudService нужен, чтобы через класс ItemForm сохранить в бд и обработать в той форме ошибки
+     * @param gridListDataView нужем, чтобы вызвать обновление после диалога
+     * @param item объект для инвенторизации, если null, то форма это диалог для создания
      */
-    public TaskDialog(@NonNull final TaskCrudService taskCrudService,
-            @NonNull final UserCrudService userCrudService,
-            @NonNull final Set<Item> items) {
-        final TaskForm taskForm = new TaskForm(taskCrudService, userCrudService, items);
+    public ItemDialog(@NonNull final ItemCrudService itemCrudService,
+            @NonNull final GridListDataView<Item> gridListDataView,
+            @Nullable final Item item) {
+        // final TaskForm taskForm = new TaskForm(taskCrudService, userCrudService, items);
 
-        final Button createTaskButton = new Button("Создать задачу", event -> {
-            if (taskForm.validateAndSave()) {
-                close();
-            }
+        final Button createTaskButton = new Button("Создать объект", event -> {
+            // if (taskForm.validateAndSave()) {
+            // close();
+            // }
         });
         final Button cancelTaskButton = new Button("Отмена", event -> close());
         createTaskButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -59,7 +58,7 @@ public class TaskDialog extends Dialog {
         buttonLayout.getStyle().set("flex-wrap", "wrap");
         buttonLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
-        add(taskForm, buttonLayout);
+        // add(taskForm, buttonLayout);
+        add(new FormLayout(), buttonLayout);
     }
-
 }

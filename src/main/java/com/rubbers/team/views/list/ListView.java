@@ -21,8 +21,6 @@ import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 
-import com.rubbers.team.views.list.task.TaskDialog;
-import com.rubbers.team.views.list.task.TaskForm;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +30,8 @@ import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.TaskCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
 import com.rubbers.team.views.MainLayout;
+import com.rubbers.team.views.list.task.TaskDialog;
+import com.rubbers.team.views.list.task.TaskForm;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
