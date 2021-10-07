@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.annotation.Generated;
 import javax.annotation.Nullable;
 import javax.persistence.*;
 
@@ -89,7 +88,7 @@ public class Task {
      */
     @NonNull
     @Builder.Default
-    private String order = "Приказ №" + RandomStringUtils.randomNumeric(3) + " о проведении учета";
+    private String orderDocument = "Приказ №" + RandomStringUtils.randomNumeric(3) + " о проведении учета";
 
     /**
      * Цифровая инвенторизация, что это вообще???

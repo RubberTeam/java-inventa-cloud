@@ -50,51 +50,50 @@ public class ItemDataGenerator {
                     .sorted(Comparator.comparing(Item::getItemId))
                     .collect(Collectors.toList());
 
-            val task1items = new HashSet<Item>();
-            for (int i = 0; i < 5; i++) {
-                task1items.add(items.get(new Random().nextInt(100)));
-            }
             val task1 = Task.builder()
-                    .items(task1items)
+                    //.items(task1items)
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.DONE)
                     .build();
-            task1.getIssues().forEach(item -> item.setTaskID(task1.getTaskId()));
+            for (int i = 0; i < 5; i++) {
+                val temp = items.get(new Random().nextInt(100));
+                temp.setTaskID(task1.getTaskId());
+                itemRepository.save(temp);
+            }
             taskRepository.save(task1);
 
-            val task2items = new HashSet<Item>();
-            for (int i = 0; i < 5; i++) {
-                task2items.add(items.get(new Random().nextInt((200 - 100) + 100)));
-            }
             val task2 = Task.builder()
-                    .items(task2items)
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.DONE)
                     .build();
-            task2.getIssues().forEach(item -> item.setTaskID(task2.getTaskId()));
+            for (int i = 0; i < 5; i++) {
+                val temp = items.get(new Random().nextInt((200 - 100) + 100));
+                temp.setTaskID(task2.getTaskId());
+                itemRepository.save(temp);
+            }
             taskRepository.save(task2);
 
-            val task3items = new HashSet<Item>();
-            for (int i = 0; i < 10; i++) {
-                task3items.add(items.get(new Random().nextInt((300 - 200) + 200)));
-            }
             val task3 = Task.builder()
-                    .items(task3items)
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.ASSIGNED)
                     .build();
-            task3.getIssues().forEach(item -> item.setTaskID(task3.getTaskId()));
+            for (int i = 0; i < 5; i++) {
+                val temp = items.get(new Random().nextInt((300 - 200) + 200));
+                temp.setTaskID(task3.getTaskId());
+                itemRepository.save(temp);
+            }
             taskRepository.save(task3);
 
-            val task4items = new HashSet<Item>();
-            for (int i = 0; i < 10; i++) {
-                task4items.add(items.get(new Random().nextInt((300 - 200) + 200)));
-            }
+
             val task4 = Task.builder()
-                    .items(task4items)
+                    .assignedPerformer("no one")
                     .taskStatus(TaskStatus.SCHEDULED)
                     .build();
-            task4.getIssues().forEach(item -> item.setTaskID(task4.getTaskId()));
+            for (int i = 0; i < 5; i++) {
+                val temp = items.get(new Random().nextInt((300 - 200) + 200));
+                temp.setTaskID(task4.getTaskId());
+                itemRepository.save(temp);
+            }
             taskRepository.save(task4);
         };
     }
