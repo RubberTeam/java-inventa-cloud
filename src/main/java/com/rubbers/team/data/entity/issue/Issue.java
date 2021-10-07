@@ -19,6 +19,7 @@ package com.rubbers.team.data.entity.issue;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -42,7 +43,16 @@ public class Issue {
     @Id
     @NonNull
     @Builder.Default
-    private UUID id = UUID.randomUUID();
+    @Column(name = "ID")
+    private UUID issueID = UUID.randomUUID();
+
+    /**
+     * Ссылки на task и item, к которым может быть привязано issue
+     */
+    @Column(name = "TASK_ID")
+    private UUID taskID;
+    @Column(name = "ITEM_ID")
+    private UUID itemID;
 
     /**
      * Описание проблемы

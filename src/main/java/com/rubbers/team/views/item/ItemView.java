@@ -133,7 +133,7 @@ public class ItemView extends Div {
         final TextField taskField = new TextField("Task identifier");
         taskField.setPlaceholder("Write here id of the task which the item should have been inventoried");
         taskField.setClearButtonVisible(true);
-        binder.forField(taskField).bind(Item::getTaskId, Item::setTaskId);
+        binder.forField(taskField).bind(x -> x.getTaskID().toString(), (x, y) -> x.setTaskID(UUID.fromString(y)));
 
         // private int count = 1;
         final IntegerField countField = new IntegerField("Items count");
@@ -280,7 +280,7 @@ public class ItemView extends Div {
         final TextField taskField = new TextField("Task identifier");
         taskField.setPlaceholder("Write here id of the task which the item should have been inventoried");
         taskField.setClearButtonVisible(true);
-        binder.forField(taskField).bind(Item::getTaskId, Item::setTaskId);
+        binder.forField(taskField).bind(x -> x.getTaskID().toString(), (x, y) -> x.setTaskID(UUID.fromString(y)));
 
         // private int count = 1;
         final IntegerField countField = new IntegerField("Items count");

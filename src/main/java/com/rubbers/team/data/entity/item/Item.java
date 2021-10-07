@@ -24,8 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.Min;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -55,6 +54,7 @@ public class Item {
     @Id
     @NonNull
     @Builder.Default
+    @Column(name = "ID")
     private UUID itemId = UUID.randomUUID();
 
     /**
@@ -133,7 +133,8 @@ public class Item {
     /**
      * Соответствует Task_ID - последний активный таск, в котором велась работы над данным объектом
      */
-    private String taskId;
+    @Column(name = "TASK_ID")
+    private UUID taskID;
 
     /**
      * Индикатор того, что уже находится в каком-то таске И должен быть проинвенторизирован
@@ -176,6 +177,8 @@ public class Item {
      * Проблема
      */
     @Nullable
+    @JoinColumn(name = "ITEM_ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Issue itemIssue;
 
     public static Item getRandom() {

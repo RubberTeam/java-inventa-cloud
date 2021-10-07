@@ -17,9 +17,7 @@
 package com.rubbers.team.data.generator;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.CommandLineRunner;
@@ -52,7 +50,7 @@ public class ItemDataGenerator {
                     .sorted(Comparator.comparing(Item::getItemId))
                     .collect(Collectors.toList());
 
-            val task1items = new ArrayList<Item>();
+            val task1items = new HashSet<Item>();
             for (int i = 0; i < 5; i++) {
                 task1items.add(items.get(new Random().nextInt(100)));
             }
@@ -61,9 +59,10 @@ public class ItemDataGenerator {
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.DONE)
                     .build();
+            task1.getIssues().forEach(item -> item.setTaskID(task1.getTaskId()));
             taskRepository.save(task1);
 
-            val task2items = new ArrayList<Item>();
+            val task2items = new HashSet<Item>();
             for (int i = 0; i < 5; i++) {
                 task2items.add(items.get(new Random().nextInt((200 - 100) + 100)));
             }
@@ -72,9 +71,10 @@ public class ItemDataGenerator {
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.DONE)
                     .build();
+            task2.getIssues().forEach(item -> item.setTaskID(task2.getTaskId()));
             taskRepository.save(task2);
 
-            val task3items = new ArrayList<Item>();
+            val task3items = new HashSet<Item>();
             for (int i = 0; i < 10; i++) {
                 task3items.add(items.get(new Random().nextInt((300 - 200) + 200)));
             }
@@ -83,9 +83,10 @@ public class ItemDataGenerator {
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.ASSIGNED)
                     .build();
+            task3.getIssues().forEach(item -> item.setTaskID(task3.getTaskId()));
             taskRepository.save(task3);
 
-            val task4items = new ArrayList<Item>();
+            val task4items = new HashSet<Item>();
             for (int i = 0; i < 10; i++) {
                 task4items.add(items.get(new Random().nextInt((300 - 200) + 200)));
             }
@@ -93,6 +94,7 @@ public class ItemDataGenerator {
                     .items(task4items)
                     .taskStatus(TaskStatus.SCHEDULED)
                     .build();
+            task4.getIssues().forEach(item -> item.setTaskID(task4.getTaskId()));
             taskRepository.save(task4);
         };
     }

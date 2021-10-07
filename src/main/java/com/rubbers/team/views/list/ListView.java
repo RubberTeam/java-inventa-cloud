@@ -136,7 +136,7 @@ public class ListView extends Div {
                 .setResizable(true)
                 .setHeader("updated")
                 .setAutoWidth(true);
-        lastTaskColumn = grid.addColumn(Item::getTaskId)
+        lastTaskColumn = grid.addColumn(Item::getTaskID)
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setResizable(true)
                 .setHeader("task")
@@ -248,7 +248,7 @@ public class ListView extends Div {
         taskFilter.setValueChangeMode(ValueChangeMode.EAGER);
         taskFilter.addValueChangeListener(
                 event -> gridListDataView.addFilter(
-                        item -> StringUtils.containsIgnoreCase(item.getTaskId(), taskFilter.getValue())));
+                        item -> StringUtils.containsIgnoreCase(item.getTaskID().toString(), taskFilter.getValue())));
         filterRow.getCell(lastTaskColumn).setComponent(taskFilter);
 
         // Частичный фильтр по локации

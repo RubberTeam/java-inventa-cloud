@@ -19,14 +19,12 @@ package com.rubbers.team.data.entity.task;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import javax.annotation.Generated;
 import javax.annotation.Nullable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -51,6 +49,7 @@ public class Task {
     @Id
     @NonNull
     @Builder.Default
+    @Column(name = "ID")
     private UUID taskId = UUID.randomUUID();
 
     /**
@@ -122,17 +121,19 @@ public class Task {
     private LocalDateTime endDateTime;
 
     /**
-     * Список ценностных объектов, участвующих в таске. Не может быть null, может быть пустым, правда в каких случаях?
+     * Список ценностных объектов, участвующих в таске. Может быть пустым, правда в каких случаях?
      */
     @NonNull
     @Builder.Default
+    @JoinColumn(name = "TASK_ID")
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<Item> items = Collections.emptyList();
+    private Set<Item> items = Collections.emptySet();
 
     /**
      * Список проблем, которые возникли в данном бизнесс-процессе
      */
     @Builder.Default
+    @JoinColumn(name = "TASK_ID")
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<Issue> issues = Collections.emptyList();
+    private Set<Issue> issues = Collections.emptySet();
 }

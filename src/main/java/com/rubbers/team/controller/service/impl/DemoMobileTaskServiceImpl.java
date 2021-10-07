@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
+import com.rubbers.team.controller.service.TaskService;
 import com.rubbers.team.data.entity.task.Task;
 import com.rubbers.team.data.service.TaskRepository;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -30,7 +31,7 @@ import lombok.NonNull;
 
 @SpringComponent
 @AllArgsConstructor
-public class DemoMobileTaskServiceImpl {
+public class DemoMobileTaskServiceImpl implements TaskService {
 
     private TaskRepository taskRepository;
 
