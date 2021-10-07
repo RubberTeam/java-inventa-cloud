@@ -1,4 +1,26 @@
+/*
+ * Copyright (c) 2021 Simeshin AM <simeshin.a.m@sberbank.ru>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 package com.rubbers.team.views.list;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.task.Task;
@@ -8,17 +30,10 @@ import com.rubbers.team.data.service.impl.TaskCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Форма для создания тасков из таблицы с ценностными объектами
@@ -30,23 +45,29 @@ public class TaskForm extends FormLayout {
     private TaskCrudService taskCrudService;
     private List<Item> items;
 
-    private TextField idField = new TextField("ID");
-    private TextField itemsCount = new TextField("Количество объектов");
-    private ComboBox<User> fromUser = new ComboBox<>("От полльзователя");
-    private ComboBox<User> toUser = new ComboBox<>("Для пользователя");
-    private TextField contactInformation = new TextField("Контактная информация ответственного лица");
-    private ComboBox<TaskStatus> initialStatus = new ComboBox<>("Начальный статус");
-    private DatePicker fiscalYearPicker = new DatePicker("Фискальный год");
-    private TextField orderDocument = new TextField("Документ-обоснование");
-    private Checkbox cipher = new Checkbox("Цифровая инвентаризация");
+    private final TextField idField = new TextField("ID");
+    private final TextField itemsCount = new TextField("Количество выбранных объектов");
+    private final ComboBox<User> fromUser = new ComboBox<>("От полльзователя");
+    private final ComboBox<User> toUser = new ComboBox<>("Для пользователя");
+    private final TextField contactInformation = new TextField("Контактная информация ответственного лица");
+    private final ComboBox<TaskStatus> initialStatus = new ComboBox<>("Начальный статус");
+    private final ComboBox<Integer> fiscalYearPicker = new ComboBox<>(
+            "Фискальный год",
+            IntStream.range(
+                    LocalDate.now().getYear() - 99,
+                    LocalDate.now().getYear() + 1).boxed()
+                    .collect(Collectors.toList()));
+    private final TextField orderDocument = new TextField("Документ-обоснование");
+    private final Checkbox cipher = new Checkbox("Цифровая инвентаризация");
 
     /**
      * Дефолтный конструктор формы
      *
      * @param taskCrudService сервис, куда сохраним созданный таск
-     * @param items           список ценностных объектов для бизнесс-процесса
+     * @param items список ценностных объектов для бизнесс-процесса
      */
-    public TaskForm(final TaskCrudService taskCrudService, final UserCrudService userCrudService, final List<Item> items) {
+    public TaskForm(final TaskCrudService taskCrudService, final UserCrudService userCrudService,
+            final List<Item> items) {
         addClassName("task-form");
 
         this.taskCrudService = taskCrudService;
@@ -54,18 +75,45 @@ public class TaskForm extends FormLayout {
 
         idField.setReadOnly(true);
         idField.setValue(UUID.randomUUID().toString());
-        itemsCount.setValue(String.valueOf(items.size()));
-        fromUser.setItems(userCrudService.getRepository().findAll());
-        toUser.setItems(userCrudService.getRepository().findAll());
-        contactInformation.setPlaceholder("Укажите контактную информацию");
-        initialStatus.setItems(TaskStatus.values());
-        fiscalYearPicker.setValue(LocalDate.now());
+        binder.forField(idField).bind(x -> x.getTaskId().toString(), (x, y) -> x.setTaskId(UUID.fromString(y)));
 
-        final List<Integer> selectableYears = IntStream.range(
-                        LocalDate.now().getYear() - 99,
-                        LocalDate.now().getYear() + 1)
-                .boxed().collect(Collectors.toList());
-        //fiscalYearPicker.
+        itemsCount.setValue(String.valueOf(items.size()));
+        itemsCount.setReadOnly(true);
+
+        fromUser.setItems(userCrudService.getRepository().findAll());
+        binder.forField(fromUser)
+                .bind(
+                        x -> userCrudService.getRepository()
+                                .findAll().stream()
+                                .filter(u -> u.getUsername().equalsIgnoreCase(x.getBusinessAdmin()))
+                                .findAny()
+                                .get(), // todo добавить метод поиска по логину в CrudUserService
+                        (x, y) -> x.setBusinessAdmin(y.getUsername()));
+        toUser.setItems(userCrudService.getRepository().findAll());
+        binder.forField(fromUser)
+                .bind(
+                        x -> userCrudService.getRepository()
+                                .findAll().stream()
+                                .filter(u -> u.getUsername().equalsIgnoreCase(x.getAssignedPerformer()))
+                                .findAny()
+                                .get(), // todo добавить метод поиска по логину в CrudUserService
+                        (x, y) -> x.setAssignedPerformer(y.getUsername()));
+
+        contactInformation.setPlaceholder("Укажите контактную информацию");
+        binder.forField(contactInformation).bind(Task::getContactsAdmin, Task::setContactsAdmin);
+
+        initialStatus.setItems(TaskStatus.values());
+        initialStatus.setValue(TaskStatus.ASSIGNED);
+        binder.forField(initialStatus).bind(Task::getTaskStatus, Task::setTaskStatus);
+
+        fiscalYearPicker.setValue(LocalDate.now().getYear());
+        binder.forField(fiscalYearPicker).bind(Task::getFiscalYear, Task::setFiscalYear);
+
+        orderDocument.setPlaceholder("Укажите документ-обоснование");
+        binder.forField(orderDocument).bind(Task::getOrderDocument, Task::setOrderDocument);
+
+        cipher.setValue(false);
+        binder.forField(cipher).bind(Task::isCipherInventoried, Task::setCipherInventoried);
     }
 
 }

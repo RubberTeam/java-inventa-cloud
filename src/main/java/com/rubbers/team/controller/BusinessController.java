@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
-import com.rubbers.team.data.service.impl.ItemCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +30,7 @@ import com.rubbers.team.data.entity.event.Event;
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemCategory;
 import com.rubbers.team.data.entity.task.Task;
+import com.rubbers.team.data.service.impl.ItemCrudService;
 
 import lombok.AllArgsConstructor;
 
@@ -67,8 +67,7 @@ public class BusinessController {
             @RequestParam(name = "division", required = false) final String division,
             @RequestParam(name = "category", required = false) final ItemCategory itemCategory,
             @RequestParam(name = "inventory", required = false) final String inventoryNumber,
-            @RequestParam(name = "serial", required = false) final String serialNumber
-    ) {
+            @RequestParam(name = "serial", required = false) final String serialNumber) {
         return itemCrudService.getRepository()
                 .findAll()
                 .stream()
