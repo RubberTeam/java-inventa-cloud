@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import com.rubbers.team.data.entity.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +43,7 @@ public class BusinessController {
     }
 
     @PostMapping("/update")
-    public void getTasksByUser(@RequestBody @NotBlank final Task task) {
-        taskService.update(task);
+    public void update(@RequestBody @NotBlank final Event task) {
+        //taskService.update(task);
     }
 }

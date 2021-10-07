@@ -55,12 +55,12 @@ public class ItemDataGenerator {
                     .assignedDateTime(LocalDateTime.now())
                     .taskStatus(TaskStatus.DONE)
                     .build();
+            taskRepository.save(task1);
             for (int i = 0; i < 5; i++) {
                 val temp = items.get(new Random().nextInt(100));
                 temp.setTaskID(task1.getTaskId());
                 itemRepository.save(temp);
             }
-            taskRepository.save(task1);
 
             val task2 = Task.builder()
                     .assignedDateTime(LocalDateTime.now())

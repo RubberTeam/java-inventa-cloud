@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * DTO for user role.
+ * супервайзер, мол, кладовщик, координатор
  */
 @AllArgsConstructor
 public enum Role {
