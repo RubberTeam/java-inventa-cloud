@@ -16,13 +16,18 @@
  */
 package com.rubbers.team.views.leaders;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.security.PermitAll;
+
 import com.rubbers.team.views.MainLayout;
-import com.rubbers.team.views.cardlist.Person;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.dnd.GridDropMode;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -30,76 +35,77 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import javax.annotation.security.PermitAll;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @PageTitle("Leaders List")
 @Route(value = "leaders-list", layout = MainLayout.class)
 @PermitAll
 public class LeadersView extends Div implements AfterNavigationObserver {
 
-    private Div weekPage;
-    private Div monthPage;
+    private Tab weekPage;
+    private Tab monthPage;
+    private Tab countPage;
+    private VerticalLayout content;
 
-    Grid<Person> grid = new Grid<>();
+    Grid<PersonUser> gridWeek = new Grid<>();
+    Grid<PersonUser> gridMonth = new Grid<>();
+    Grid<PersonUser> gridCount = new Grid<>();
 
     public LeadersView() {
         addClassName("leaders-view");
         setSizeFull();
         addTabs();
-        configureWeekPage();
-        configureMonthPage();
-
     }
 
-    private void configureMonthPage() {
-        grid.setHeight("1000%");
+    private void setGrid(Grid<PersonUser> grid) {
+        grid.setHeight("100%");
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
-        grid.addComponentColumn(person -> createCard(person));
+
+        if (grid.equals(gridWeek)) {
+            grid.addComponentColumn(person -> createCard(person, 1));
+        } else if (grid.equals(gridMonth)) {
+            grid.addComponentColumn(person -> createCard(person, 2));
+        } else {
+            grid.addComponentColumn(person -> createCard(person, 3));
+        }
         add(grid);
     }
 
-    private void configureWeekPage() {
-        grid.setHeight("100%");
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
-        grid.addComponentColumn(person -> createCard(person));
-    }
-
     private void addTabs() {
-        final Tab weekLeadTab = new Tab("Лидеры недели");
-        weekPage = new Div();
+        weekPage = new Tab("Лидеры недели");
+        monthPage = new Tab("Лидеры месяца");
+        countPage = new Tab("Лидеры за все время");
 
-        final Tab monthLeadTab = new Tab("Лидеры месяца");
-        monthPage = new Div();
-        monthPage.setVisible(false);
+        Tabs tabs = new Tabs(weekPage, monthPage, countPage);
+        tabs.addSelectedChangeListener(event -> setContent(event.getSelectedTab()));
 
-        final Map<Tab, Component> tabsToPages = new HashMap<>();
-        tabsToPages.put(weekLeadTab, weekPage);
-        tabsToPages.put(monthLeadTab, monthPage);
+        content = new VerticalLayout();
+        content.setSpacing(false);
+        setContent(tabs.getSelectedTab());
 
-        final Tabs tabs = new Tabs(weekLeadTab, monthLeadTab);
-        tabs.setOrientation(Tabs.Orientation.HORIZONTAL);
-        tabs.setFlexGrowForEnclosedTabs(1);
-        final Div pages = new Div(weekPage, monthPage);
-
-        tabs.addSelectedChangeListener(event -> {
-            tabsToPages.values().forEach(page -> page.setVisible(false));
-            final Component selectedPage = tabsToPages.get(tabs.getSelectedTab());
-            selectedPage.setVisible(true);
-        });
-
-        add(tabs, pages);
+        tabs.addThemeVariants(TabsVariant.LUMO_EQUAL_WIDTH_TABS);
+        add(tabs, content);
     }
 
-    private HorizontalLayout createCard(Person person) {
+    private void setContent(Tab tab) {
+        content.removeAll();
+        if (tab.equals(weekPage)) {
+            content.add(new Paragraph("This is the weekPage tab"));
+            setGrid(gridWeek);
+        } else if (tab.equals(monthPage)) {
+            content.add(new Paragraph("This is the monthPage tab"));
+            setGrid(gridMonth);
+        } else {
+            content.add(new Paragraph("This is the countPage tab"));
+            setGrid(gridCount);
+        }
+    }
+
+    private HorizontalLayout createCard(PersonUser person, int code) {
         HorizontalLayout card = new HorizontalLayout();
         card.addClassName("card");
         card.setSpacing(false);
@@ -123,66 +129,60 @@ public class LeadersView extends Div implements AfterNavigationObserver {
         date.addClassName("date");
         header.add(name, date);
 
-        Span post = new Span(person.getPost());
-        post.addClassName("post");
-
         HorizontalLayout actions = new HorizontalLayout();
         actions.addClassName("actions");
         actions.setSpacing(false);
         actions.getThemeList().add("spacing-s");
 
-        Icon likeIcon = VaadinIcon.HEART.create();
-        likeIcon.addClassName("icon");
-        Span likes = new Span(person.getLikes());
-        likes.addClassName("likes");
+        Icon barcodeIcon = VaadinIcon.BARCODE.create();
+        barcodeIcon.addClassName("icon");
+        Span barcode = new Span();
+        if (code == 1) {
+            barcode.setText(String.valueOf(person.getWeekCount()));
+        } else if (code == 2) {
+            barcode.setText(String.valueOf(person.getMonthCount()));
+            barcode.addClassName("barcode");
+        } else if (code == 3) {
+            barcode.setText(String.valueOf(person.getCount()));
+        }
+        barcode.addClassName("barcode");
 
-        actions.add(likeIcon, likes);
-
-        description.add(header, post, actions);
+        actions.add(barcodeIcon, barcode);
+        description.add(header, actions);
         card.add(image, description);
         return card;
     }
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-
         // Set some data when this view is displayed.
-        List<Person> persons = Arrays.asList( //
+        List<PersonUser> persons = Arrays.asList( //
+                createPerson("https://randomuser.me/api/portraits/men/76.jpg", "Alf Huncoot", "Apr 21",
+                        989797, 5456, 998),
                 createPerson("https://randomuser.me/api/portraits/men/42.jpg", "John Smith", "May 8",
-                        "1K"),
+                        987, 654, 321),
                 createPerson("https://randomuser.me/api/portraits/women/42.jpg", "Abagail Libbie", "May 3",
-                        "1K"),
-//                createPerson("https://randomuser.me/api/portraits/men/24.jpg", "Alberto Raya", "May 3",
-//                        "1K"),
-//                createPerson("https://randomuser.me/api/portraits/women/24.jpg", "Emmy Elsner", "Apr 22",
-//                        "1K"),
-//                createPerson("https://randomuser.me/api/portraits/men/76.jpg", "Alf Huncoot", "Apr 21",
-//                        "1K"),
-//                createPerson("https://randomuser.me/api/portraits/women/76.jpg", "Lidmila Vilensky", "Apr 17",
-//                        "1K"),
-//                createPerson("https://randomuser.me/api/portraits/men/94.jpg", "Jarrett Cawsey", "Apr 17",
-//                        "1K"),
+                        876, 543, 123),
+                createPerson("https://randomuser.me/api/portraits/men/24.jpg", "Alberto Raya", "May 3",
+                        323, 231, 121),
+                createPerson("https://randomuser.me/api/portraits/women/24.jpg", "Emmy Elsner", "Apr 22",
+                        434, 213, 45),
                 createPerson("https://randomuser.me/api/portraits/women/94.jpg", "Tania Perfilyeva", "Mar 8",
-                        "1K"),
-                createPerson("https://randomuser.me/api/portraits/men/16.jpg", "Ivan Polo", "Mar 5",
-                        "1K"),
-                createPerson("https://randomuser.me/api/portraits/women/16.jpg", "Emelda Scandroot", "Mar 5",
-                        "1K"),
-                createPerson("https://randomuser.me/api/portraits/men/67.jpg", "Marcos Sá", "Mar 4",
-                        "1K"),
-                createPerson("https://randomuser.me/api/portraits/women/67.jpg", "Jacqueline Asong", "Mar 2",
-                        "1K")
-
-        );
-        grid.setItems(persons);
+                        98, 23, 1));
+        gridWeek.setItems(persons);
+        gridMonth.setItems(persons);
+        gridCount.setItems(persons);
     }
 
-    private static Person createPerson(String image, String name, String date, String likes) {
-        Person p = new Person();
+    private static PersonUser createPerson(String image, String name, String date, int count, int monthCount,
+            int weekCount) {
+        PersonUser p = new PersonUser();
         p.setImage(image);
         p.setName(name);
         p.setDate(date);
-        p.setLikes(likes);
+        p.setCount(count);
+        p.setWeekCount(weekCount);
+        p.setMonthCount(monthCount);
         return p;
     }
 
