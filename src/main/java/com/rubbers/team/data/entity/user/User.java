@@ -26,6 +26,7 @@ import javax.persistence.Lob;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rubbers.team.data.AbstractEntity;
 import com.rubbers.team.data.Role;
+
 import lombok.Getter;
 import lombok.Setter;
 

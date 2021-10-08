@@ -20,18 +20,27 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.annotation.security.PermitAll;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.rubbers.team.data.Role;
+import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.task.Task;
+import com.rubbers.team.data.entity.task.TaskStatus;
 import com.rubbers.team.data.entity.user.User;
 import com.rubbers.team.data.service.impl.IssueCrudService;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.TaskCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
 import com.rubbers.team.views.MainLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
@@ -41,12 +50,13 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
+import com.vaadin.flow.component.progressbar.ProgressBarVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.val;
 
 @PermitAll
 @PageTitle("Tasks")
@@ -62,11 +72,10 @@ public class TasksLikeTwitterListView extends Div {
     private final Grid<Task> grid = new Grid<>();
 
     public TasksLikeTwitterListView(@Autowired final ItemCrudService itemCrudService,
-                                    @Autowired final UserCrudService userCrudService,
-                                    @Autowired final IssueCrudService issueCrudService,
-                                    @Autowired final TaskCrudService taskCrudService,
-                                    @Autowired final PasswordEncoder passwordEncoder
-    ) {
+            @Autowired final UserCrudService userCrudService,
+            @Autowired final IssueCrudService issueCrudService,
+            @Autowired final TaskCrudService taskCrudService,
+            @Autowired final PasswordEncoder passwordEncoder) {
         this.itemCrudService = itemCrudService;
         this.userCrudService = userCrudService;
         this.taskCrudService = taskCrudService;
@@ -77,7 +86,8 @@ public class TasksLikeTwitterListView extends Div {
         setSizeFull();
         grid.setHeight("100%");
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
-        grid.addComponentColumn(person -> createTaskInfo(person));
+        grid.addComponentColumn(task -> createTaskInfo(task));
+        grid.addComponentColumn(task -> createProgressBar(task));
         grid.setItems(taskCrudService.getRepository().findAll());
         add(grid);
     }
@@ -108,9 +118,18 @@ public class TasksLikeTwitterListView extends Div {
         final Span email = new Span(user.getEmail());
         name.addClassName("email");
 
+        final Button justStatus = new Button(task.getTaskStatus().getStatusName());
+        justStatus.setVisible(true);
+        if (TaskStatus.DONE.equals(task.getTaskStatus())) {
+            justStatus.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+        }
+        if (TaskStatus.ISSUE.equals(task.getTaskStatus())) {
+            justStatus.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        }
+
         final Span date = new Span(task.getCreationDateTime().format(DateTimeFormatter.ISO_DATE));
         date.addClassName("date");
-        header.add(name, email, date);
+        header.add(name, email, date, justStatus);
 
         final Span post = new Span("Задача по " + task.getOrderDocument());
         post.addClassName("post");
@@ -127,13 +146,57 @@ public class TasksLikeTwitterListView extends Div {
 
         final Icon issueIcon = VaadinIcon.AMBULANCE.create();
         issueIcon.addClassName("icon");
-        final Span issues = new Span(String.valueOf(task.getIssues().size()));
+        Span issues = new Span(String.valueOf(task.getIssues().size()));
         issues.addClassName("issueCount");
+        if (TaskStatus.ISSUE.equals(task.getTaskStatus())) {
+            issues = new Span("1");
+        }
 
         actions.add(taskIcon, tasks, issueIcon, issues);
         description.add(header, post, actions);
         card.add(image, description);
 
+        return card;
+    }
+
+    public VerticalLayout createProgressBar(final Task task) {
+        final VerticalLayout card = new VerticalLayout();
+        card.addClassName("card");
+
+        final ProgressBar progressBar = new ProgressBar();
+
+        final int itemsInProgress = task.getItems()
+                .stream()
+                .filter(x -> !x.getTaskCurrentlyInventoried())
+                .collect(Collectors.toList())
+                .size();
+        final int allItemsCount = task.getItems().size();
+        Div progressBarLabel = new Div();
+
+        final double progressValue = allItemsCount == 0 ? 1.0 : itemsInProgress * 1.0 / allItemsCount;
+        progressBarLabel.setText("Выполнено на " + itemsInProgress + " из " + allItemsCount);
+
+        if (TaskStatus.ISSUE.equals(task.getTaskStatus())) {
+            progressBar.setValue(progressValue);
+            progressBar.addThemeVariants(ProgressBarVariant.LUMO_ERROR);
+        }
+        if (TaskStatus.ASSIGNED.equals(task.getTaskStatus())
+                || TaskStatus.SCHEDULED.equals(task.getTaskStatus())
+                || TaskStatus.CREATED.equals(task.getTaskStatus())) {
+            progressBar.setValue(progressValue);
+            progressBar.addThemeVariants(ProgressBarVariant.LUMO_CONTRAST);
+        }
+        if (TaskStatus.DONE.equals(task.getTaskStatus())) {
+            progressBar.setValue(1.0);
+            progressBar.addThemeVariants(ProgressBarVariant.LUMO_SUCCESS);
+        }
+
+        if (TaskStatus.IN_PROGRESS.equals(task.getTaskStatus())) {
+            progressBar.setValue(progressValue);
+            progressBar.addThemeVariants(ProgressBarVariant.LUMO_SUCCESS);
+        }
+
+        card.add(progressBarLabel, progressBar);
         return card;
     }
 
@@ -277,7 +340,6 @@ public class TasksLikeTwitterListView extends Div {
      * @param task таск
      * @return User или
      */
-    @Nullable
     private User getUserByTask(@NonNull final Task task) {
         final List<User> users = userCrudService.getRepository().findAll();
         final Optional<User> user = users.stream()

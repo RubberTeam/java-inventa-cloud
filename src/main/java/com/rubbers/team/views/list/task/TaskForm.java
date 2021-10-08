@@ -26,6 +26,7 @@ import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.task.Task;
 import com.rubbers.team.data.entity.task.TaskStatus;
 import com.rubbers.team.data.entity.user.User;
+import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.TaskCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -48,6 +49,7 @@ public class TaskForm extends FormLayout {
     final Binder<Task> binder = new BeanValidationBinder<>(Task.class);
 
     private final TaskCrudService taskCrudService;
+    private final ItemCrudService itemCrudService;
     private final Set<Item> items;
 
     /**
@@ -57,11 +59,13 @@ public class TaskForm extends FormLayout {
      * @param items список ценностных объектов для бизнесс-процесса
      */
     public TaskForm(final TaskCrudService taskCrudService,
+            final ItemCrudService itemCrudService,
             final UserCrudService userCrudService,
             final Set<Item> items) {
         addClassName("task-form");
 
         this.taskCrudService = taskCrudService;
+        this.itemCrudService = itemCrudService;
         this.items = items;
 
         final TextField idField = new TextField("ID");
@@ -149,6 +153,11 @@ public class TaskForm extends FormLayout {
             final Task clearItem = Task.builder().build();
             binder.writeBean(clearItem);
             taskCrudService.getRepository().save(clearItem);
+            items.forEach(item -> {
+                item.setTaskID(clearItem.getTaskId());
+                item.setTaskCurrentlyInventoried(true);
+                itemCrudService.getRepository().save(item);
+            });
             final Notification notification = new Notification(
                     "Задача успешно создана",
                     3000,

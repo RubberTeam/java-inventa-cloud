@@ -190,6 +190,7 @@ public class Item {
                 .itemCount(getRandomCount())
                 .itemStatus(status)
                 .itemLocation(getRandomLocation())
+                .taskCurrentlyInventoried(false)
                 .build();
     }
 

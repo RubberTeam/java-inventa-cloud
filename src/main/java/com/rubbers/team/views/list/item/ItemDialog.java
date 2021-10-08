@@ -39,14 +39,14 @@ public class ItemDialog extends Dialog {
     /**
      * Базовый конструктор
      *
-     * @param itemCrudService  нужен, чтобы через класс ItemForm сохранить в бд и обработать в той форме ошибки
+     * @param itemCrudService нужен, чтобы через класс ItemForm сохранить в бд и обработать в той форме ошибки
      * @param gridListDataView нужем, чтобы вызвать обновление после диалога
-     * @param item             объект для инвенторизации, если null, то форма это диалог для создания
+     * @param item объект для инвенторизации, если null, то форма это диалог для создания
      */
     public ItemDialog(@NonNull final ItemCrudService itemCrudService,
-                      @NonNull final UserCrudService userCrudService,
-                      @NonNull final GridListDataView<Item> gridListDataView,
-                      @Nullable final Item item) {
+            @NonNull final UserCrudService userCrudService,
+            @NonNull final GridListDataView<Item> gridListDataView,
+            @Nullable final Item item) {
         final ItemForm itemForm = new ItemForm(itemCrudService, userCrudService, gridListDataView, item);
 
         final Button createTaskButton = new Button(
