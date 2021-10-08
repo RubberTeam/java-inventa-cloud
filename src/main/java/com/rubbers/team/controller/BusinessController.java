@@ -23,9 +23,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
-import com.rubbers.team.data.entity.task.TaskStatus;
-import com.rubbers.team.data.service.impl.TaskCrudService;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +31,12 @@ import com.rubbers.team.data.entity.event.Event;
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemCategory;
 import com.rubbers.team.data.entity.task.Task;
+import com.rubbers.team.data.entity.task.TaskStatus;
 import com.rubbers.team.data.service.impl.ItemCrudService;
+import com.rubbers.team.data.service.impl.TaskCrudService;
 
 import lombok.AllArgsConstructor;
+import lombok.val;
 
 @RestController
 @AllArgsConstructor

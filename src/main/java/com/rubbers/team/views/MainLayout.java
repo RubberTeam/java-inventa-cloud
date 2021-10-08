@@ -25,6 +25,7 @@ import com.rubbers.team.security.AuthenticatedUser;
 import com.rubbers.team.views.cardlist.TasksLikeTwitterListView;
 import com.rubbers.team.views.list.ListView;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -40,9 +41,11 @@ import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Nav;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
+import com.vaadin.flow.dom.ThemeList;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+import com.vaadin.flow.theme.lumo.Lumo;
 
 @PageTitle("Main")
 public class MainLayout extends AppLayout {
@@ -151,9 +154,15 @@ public class MainLayout extends AppLayout {
 
             final ContextMenu userMenu = new ContextMenu(avatar);
             userMenu.setOpenOnClick(true);
-            userMenu.addItem("Logout", e -> {
-                authenticatedUser.logout();
+            userMenu.addItem("Сменить тему", e -> {
+                ThemeList themeList = UI.getCurrent().getElement().getThemeList();
+                if (themeList.contains(Lumo.DARK)) {
+                    themeList.remove(Lumo.DARK);
+                } else {
+                    themeList.add(Lumo.DARK);
+                }
             });
+            userMenu.addItem("Выйти", e -> authenticatedUser.logout());
 
             final Span name = new Span(user.getName());
             name.addClassNames("font-medium", "text-s", "text-secondary");
