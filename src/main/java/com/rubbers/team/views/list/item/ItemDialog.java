@@ -19,6 +19,7 @@ package com.rubbers.team.views.list.item;
 import javax.annotation.Nullable;
 
 import com.rubbers.team.data.entity.item.Item;
+import com.rubbers.team.data.service.impl.AuditCrudService;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
 import com.vaadin.flow.component.button.Button;
@@ -44,10 +45,11 @@ public class ItemDialog extends Dialog {
      * @param item объект для инвенторизации, если null, то форма это диалог для создания
      */
     public ItemDialog(@NonNull final ItemCrudService itemCrudService,
-            @NonNull final UserCrudService userCrudService,
-            @NonNull final GridListDataView<Item> gridListDataView,
-            @Nullable final Item item) {
-        final ItemForm itemForm = new ItemForm(itemCrudService, userCrudService, gridListDataView, item);
+                      @NonNull final UserCrudService userCrudService,
+                      @NonNull final AuditCrudService auditCrudService,
+                      @NonNull final GridListDataView<Item> gridListDataView,
+                      @Nullable final Item item) {
+        final ItemForm itemForm = new ItemForm(itemCrudService, userCrudService, auditCrudService, gridListDataView, item);
 
         final Button createTaskButton = new Button(
                 item == null ? "Создать" : "Сохранить",

@@ -21,6 +21,7 @@ import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 
+import com.rubbers.team.data.service.impl.AuditCrudService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -65,6 +66,7 @@ public class ListView extends Div {
     private final ItemCrudService itemCrudService;
     private final UserCrudService userCrudService;
     private final TaskCrudService taskCrudService;
+    private final AuditCrudService auditCrudService;
 
     private Grid<Item> grid;
     private GridListDataView<Item> gridListDataView;
@@ -83,11 +85,13 @@ public class ListView extends Div {
     private Set<Item> selectedCandidatesForTask;
 
     public ListView(@Autowired final ItemCrudService itemCrudService,
-            @Autowired final UserCrudService userCrudService,
-            @Autowired final TaskCrudService taskCrudService) {
+                    @Autowired final UserCrudService userCrudService,
+                    @Autowired final TaskCrudService taskCrudService,
+                    @Autowired final AuditCrudService auditCrudService) {
         this.itemCrudService = itemCrudService;
         this.userCrudService = userCrudService;
         this.taskCrudService = taskCrudService;
+        this.auditCrudService = auditCrudService;
         addClassName("list-view");
         setSizeFull();
         createGrid();
@@ -150,9 +154,9 @@ public class ListView extends Div {
                 .setHeader("serial")
                 .setAutoWidth(true);
         lastUpdateColumn = grid.addColumn(
-                new LocalDateRenderer<>(
-                        Item::getItemLastUpdate,
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                        new LocalDateRenderer<>(
+                                Item::getItemLastUpdate,
+                                DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setComparator(Item::getItemLastUpdate)
                 .setResizable(true)
@@ -309,18 +313,34 @@ public class ListView extends Div {
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.open();
             } else {
-                final ItemDialog itemDialog =
-                        new ItemDialog(itemCrudService, userCrudService, gridListDataView, lastSelectedItem);
+                final ItemDialog itemDialog = new ItemDialog(
+                        itemCrudService,
+                        userCrudService,
+                        auditCrudService,
+                        gridListDataView,
+                        lastSelectedItem
+                );
                 itemDialog.open();
             }
         });
         val createItem = contextMenu.addItem("Создать новый объект", event -> {
-            final ItemDialog itemDialog = new ItemDialog(itemCrudService, userCrudService, gridListDataView, null);
+            final ItemDialog itemDialog = new ItemDialog(
+                    itemCrudService,
+                    userCrudService,
+                    auditCrudService,
+                    gridListDataView,
+                    null
+            );
             itemDialog.open();
         });
         val createTask = contextMenu.addItem("Создать новую задачу", event -> {
-            final TaskDialog dialog =
-                    new TaskDialog(taskCrudService, userCrudService, itemCrudService, selectedCandidatesForTask);
+            final TaskDialog dialog = new TaskDialog(
+                    taskCrudService,
+                    userCrudService,
+                    itemCrudService,
+                    auditCrudService,
+                    selectedCandidatesForTask
+            );
             dialog.open();
         });
         val refresh = contextMenu.addItem("Обновить", event -> gridListDataView.refreshAll());

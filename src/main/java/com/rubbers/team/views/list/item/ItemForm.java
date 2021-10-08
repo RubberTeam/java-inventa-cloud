@@ -17,15 +17,18 @@
 package com.rubbers.team.views.list.item;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import com.rubbers.team.data.entity.audit.Audit;
 import com.rubbers.team.data.entity.issue.Issue;
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemCategory;
 import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.entity.user.User;
+import com.rubbers.team.data.service.impl.AuditCrudService;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -53,15 +56,18 @@ public class ItemForm extends FormLayout {
     private final Binder<Item> binder = new BeanValidationBinder<>(Item.class);
 
     private final ItemCrudService itemCrudService;
+    private final AuditCrudService auditCrudService;
     private final GridListDataView<Item> gridListDataView;
     private final Item item;
 
     public ItemForm(@NonNull final ItemCrudService itemCrudService,
-            @NonNull final UserCrudService userCrudService,
-            @NonNull final GridListDataView<Item> gridListDataView,
-            @Nullable final Item item) {
+                    @NonNull final UserCrudService userCrudService,
+                    @NonNull final AuditCrudService auditCrudService,
+                    @NonNull final GridListDataView<Item> gridListDataView,
+                    @Nullable final Item item) {
         this.itemCrudService = itemCrudService;
         this.gridListDataView = gridListDataView;
+        this.auditCrudService = auditCrudService;
         this.item = item;
 
         addClassName("item-form");
@@ -186,7 +192,7 @@ public class ItemForm extends FormLayout {
                 itemLastUpdate,
                 itemTaskID,
                 itemCategory
-        // itemIssue
+                // itemIssue
         );
     }
 
@@ -197,12 +203,22 @@ public class ItemForm extends FormLayout {
                 itemCrudService.getRepository().save(item);
                 gridListDataView.addItem(item);
                 gridListDataView.refreshItem(item);
+                auditCrudService.getRepository().save(new Audit(
+                        UUID.randomUUID(),
+                        LocalDateTime.now(),
+                        "Бизнес-администратором изменен объект ID: " + item.getItemId()
+                ));
             } else {
                 final Item clearItem = Item.builder().build();
                 binder.writeBean(clearItem);
                 itemCrudService.getRepository().save(clearItem);
                 gridListDataView.addItem(clearItem);
                 gridListDataView.refreshItem(clearItem);
+                auditCrudService.getRepository().save(new Audit(
+                        UUID.randomUUID(),
+                        LocalDateTime.now(),
+                        "Бизнес-администратором создан новый объект ID: " + clearItem.getItemId()
+                ));
             }
             final Notification notification = new Notification(
                     item == null ? "Объект успешно создан" : "Объект успешно обновлен",

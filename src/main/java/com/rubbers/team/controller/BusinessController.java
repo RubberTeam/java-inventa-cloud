@@ -19,10 +19,13 @@ package com.rubbers.team.controller;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
+import com.rubbers.team.data.entity.audit.Audit;
+import com.rubbers.team.data.service.impl.AuditCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,8 +55,8 @@ public class BusinessController {
     @Autowired
     private ItemCrudService itemCrudService;
 
-    // @Autowired
-    // private EventRepository eventRepository;
+    @Autowired
+    private AuditCrudService auditCrudService;
 
     @ResponseBody
     @GetMapping("/getTasksByUser")
@@ -63,6 +66,15 @@ public class BusinessController {
 
     @PostMapping("/update")
     public void update(@RequestBody @NotBlank final Event event) {
+        auditCrudService.getRepository().save(
+                new Audit(
+                        UUID.randomUUID(),
+                        LocalDateTime.now(),
+                        "Пользователь мобильного клиента сообщил о состоянии объекта ID: "
+                                + event.getItemID() + " в задаче ID: " + event.getTaskID()
+                )
+        );
+
         val item = itemCrudService.getRepository().findById(event.getItemID());
         if (item.isPresent()) {
             item.get().setTaskCurrentlyInventoried(false);
