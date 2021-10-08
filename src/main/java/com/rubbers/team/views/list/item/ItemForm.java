@@ -17,13 +17,18 @@
 package com.rubbers.team.views.list.item;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
+import com.rubbers.team.data.entity.audit.Audit;
 import com.rubbers.team.data.entity.issue.Issue;
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemCategory;
 import com.rubbers.team.data.entity.item.ItemStatus;
 import com.rubbers.team.data.entity.user.User;
+import com.rubbers.team.data.service.impl.AuditCrudService;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -43,8 +48,6 @@ import com.vaadin.flow.data.binder.ValidationException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.Nullable;
-
 /**
  * Форма для редактирования и создания ценностных объектов
  */
@@ -53,15 +56,18 @@ public class ItemForm extends FormLayout {
     private final Binder<Item> binder = new BeanValidationBinder<>(Item.class);
 
     private final ItemCrudService itemCrudService;
+    private final AuditCrudService auditCrudService;
     private final GridListDataView<Item> gridListDataView;
     private final Item item;
 
     public ItemForm(@NonNull final ItemCrudService itemCrudService,
-                    @NonNull final UserCrudService userCrudService,
-                    @NonNull final GridListDataView<Item> gridListDataView,
-                    @Nullable final Item item) {
+            @NonNull final UserCrudService userCrudService,
+            @NonNull final AuditCrudService auditCrudService,
+            @NonNull final GridListDataView<Item> gridListDataView,
+            @Nullable final Item item) {
         this.itemCrudService = itemCrudService;
         this.gridListDataView = gridListDataView;
+        this.auditCrudService = auditCrudService;
         this.item = item;
 
         addClassName("item-form");
@@ -98,19 +104,20 @@ public class ItemForm extends FormLayout {
         itemCode.setPlaceholder("Укажите табельный номер");
         binder.forField(itemCode).bind(Item::getItemCode, Item::setItemCode);
 
-        //Отличная идея с хреновой реализацией
-//        final ComboBox<User> itemOwner = new ComboBox<>("Ответственный за объект, например МОЛ на месте или складе)");
-//        itemOwner.setItems(userCrudService.getRepository().findAll());
-//        binder.forField(itemOwner)
-//                .bind(
-//                        x -> userCrudService.getRepository()
-//                                .findAll()
-//                                .stream()
-//                                .filter(u -> u.getUsername().equalsIgnoreCase(x.getItemOwner()))
-//                                .findAny()
-//                                .orElse(null), // todo добавить метод поиска по логину в CrudUserService
-//                        (x, y) -> x.setItemOwner(y.getUsername())
-//                );
+        // Отличная идея с хреновой реализацией
+        // final ComboBox<User> itemOwner = new ComboBox<>("Ответственный за объект, например МОЛ на месте или
+        // складе)");
+        // itemOwner.setItems(userCrudService.getRepository().findAll());
+        // binder.forField(itemOwner)
+        // .bind(
+        // x -> userCrudService.getRepository()
+        // .findAll()
+        // .stream()
+        // .filter(u -> u.getUsername().equalsIgnoreCase(x.getItemOwner()))
+        // .findAny()
+        // .orElse(null), // todo добавить метод поиска по логину в CrudUserService
+        // (x, y) -> x.setItemOwner(y.getUsername())
+        // );
         final TextField itemOwner = new TextField("Ответственный за объект, например МОЛ на месте или складе)");
         binder.forField(itemOwner).bind(Item::getItemOwner, Item::setItemOwner);
 
@@ -157,10 +164,9 @@ public class ItemForm extends FormLayout {
                     } else {
                         x.setTaskID(UUID.fromString(y));
                     }
-                }
-        );
+                });
 
-        //todo подумать, как сделать лучше. Сейчас не отображается
+        // todo подумать, как сделать лучше. Сейчас не отображается
         final ComboBox<Issue> itemIssue = new ComboBox<>("Проблема");
         binder.forField(itemIssue).bind(Item::getItemIssue, Item::setItemIssue);
 
@@ -186,7 +192,7 @@ public class ItemForm extends FormLayout {
                 itemLastUpdate,
                 itemTaskID,
                 itemCategory
-                //itemIssue
+        // itemIssue
         );
     }
 
@@ -197,18 +203,25 @@ public class ItemForm extends FormLayout {
                 itemCrudService.getRepository().save(item);
                 gridListDataView.addItem(item);
                 gridListDataView.refreshItem(item);
+                auditCrudService.getRepository().save(new Audit(
+                        UUID.randomUUID(),
+                        LocalDateTime.now(),
+                        "Бизнес-администратором изменен объект ID: " + item.getItemId()));
             } else {
                 final Item clearItem = Item.builder().build();
                 binder.writeBean(clearItem);
                 itemCrudService.getRepository().save(clearItem);
                 gridListDataView.addItem(clearItem);
                 gridListDataView.refreshItem(clearItem);
+                auditCrudService.getRepository().save(new Audit(
+                        UUID.randomUUID(),
+                        LocalDateTime.now(),
+                        "Бизнес-администратором создан новый объект ID: " + clearItem.getItemId()));
             }
             final Notification notification = new Notification(
                     item == null ? "Объект успешно создан" : "Объект успешно обновлен",
                     3000,
-                    Notification.Position.BOTTOM_END
-            );
+                    Notification.Position.BOTTOM_END);
             notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             notification.open();
             return true;
@@ -216,8 +229,7 @@ public class ItemForm extends FormLayout {
             final Notification notification = new Notification(
                     "Ошибка при заполнении данных, проверьте введенные данные!",
                     3000,
-                    Notification.Position.BOTTOM_END
-            );
+                    Notification.Position.BOTTOM_END);
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
             notification.open();
             return false;
@@ -226,8 +238,7 @@ public class ItemForm extends FormLayout {
             final Notification notification = new Notification(
                     "Error has occurred: " + e.getMessage() + ". Please contact IT-administrator",
                     3000,
-                    Notification.Position.BOTTOM_END
-            );
+                    Notification.Position.BOTTOM_END);
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
             notification.open();
             return false;

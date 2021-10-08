@@ -14,47 +14,35 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.data.entity.event;
+package com.rubbers.team.data.entity.audit;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
-import com.rubbers.team.data.entity.issue.Issue;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 import lombok.*;
 
 /**
- * Описывает контракт взаимодействия с модильным клиентом
+ * Сущность для сохранения событий в аудит
  */
 @Data
+@Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Event {
+public class Audit {
 
+    @Id
     @NonNull
     @Builder.Default
-    private UUID eventID = UUID.randomUUID();
+    private UUID auditID = UUID.randomUUID();
 
-    @NonNull
     @Builder.Default
-    private LocalDateTime creationDate = LocalDateTime.now();
+    private LocalDateTime auditEvenTime = LocalDateTime.now();
 
-    @NonNull
     @Builder.Default
-    private EventStatus eventStatus = EventStatus.OK;
+    private String auditDescription = "";
 
-    @NonNull
-    private UUID itemID;
-
-    private UUID taskID;
-
-    @Nullable
-    private Issue issue;
-
-    public enum EventStatus {
-        OK, ISSUE
-    }
 }

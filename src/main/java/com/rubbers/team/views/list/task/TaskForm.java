@@ -17,15 +17,19 @@
 package com.rubbers.team.views.list.task;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.rubbers.team.data.entity.audit.Audit;
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.task.Task;
 import com.rubbers.team.data.entity.task.TaskStatus;
 import com.rubbers.team.data.entity.user.User;
+import com.rubbers.team.data.service.impl.AuditCrudService;
+import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.TaskCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -48,6 +52,8 @@ public class TaskForm extends FormLayout {
     final Binder<Task> binder = new BeanValidationBinder<>(Task.class);
 
     private final TaskCrudService taskCrudService;
+    private final ItemCrudService itemCrudService;
+    private final AuditCrudService auditCrudService;
     private final Set<Item> items;
 
     /**
@@ -57,11 +63,15 @@ public class TaskForm extends FormLayout {
      * @param items список ценностных объектов для бизнесс-процесса
      */
     public TaskForm(final TaskCrudService taskCrudService,
+            final ItemCrudService itemCrudService,
             final UserCrudService userCrudService,
+            final AuditCrudService auditCrudService,
             final Set<Item> items) {
         addClassName("task-form");
 
         this.taskCrudService = taskCrudService;
+        this.itemCrudService = itemCrudService;
+        this.auditCrudService = auditCrudService;
         this.items = items;
 
         final TextField idField = new TextField("ID");
@@ -149,6 +159,20 @@ public class TaskForm extends FormLayout {
             final Task clearItem = Task.builder().build();
             binder.writeBean(clearItem);
             taskCrudService.getRepository().save(clearItem);
+            auditCrudService.getRepository().save(new Audit(
+                    UUID.randomUUID(),
+                    LocalDateTime.now(),
+                    "Бизнес-администратором создана новая задача ID: " + clearItem.getTaskId()));
+            items.forEach(item -> {
+                item.setTaskID(clearItem.getTaskId());
+                item.setTaskCurrentlyInventoried(true);
+                itemCrudService.getRepository().save(item);
+                auditCrudService.getRepository().save(new Audit(
+                        UUID.randomUUID(),
+                        LocalDateTime.now(),
+                        "Бизнес-администратор привязал объект ID: " + item.getItemId() + " к задаче ID: "
+                                + clearItem.getTaskId()));
+            });
             final Notification notification = new Notification(
                     "Задача успешно создана",
                     3000,

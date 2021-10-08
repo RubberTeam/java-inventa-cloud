@@ -19,6 +19,8 @@ package com.rubbers.team.views.list.task;
 import java.util.Set;
 
 import com.rubbers.team.data.entity.item.Item;
+import com.rubbers.team.data.service.impl.AuditCrudService;
+import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.TaskCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
 import com.vaadin.flow.component.button.Button;
@@ -45,8 +47,11 @@ public class TaskDialog extends Dialog {
      */
     public TaskDialog(@NonNull final TaskCrudService taskCrudService,
             @NonNull final UserCrudService userCrudService,
+            @NonNull final ItemCrudService itemCrudService,
+            @NonNull final AuditCrudService auditCrudService,
             @NonNull final Set<Item> items) {
-        final TaskForm taskForm = new TaskForm(taskCrudService, userCrudService, items);
+        final TaskForm taskForm =
+                new TaskForm(taskCrudService, itemCrudService, userCrudService, auditCrudService, items);
 
         final Button createTaskButton = new Button("Создать задачу", event -> {
             if (taskForm.validateAndSave()) {

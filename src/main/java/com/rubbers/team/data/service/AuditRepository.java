@@ -14,47 +14,14 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.data.entity.event;
+package com.rubbers.team.data.service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.rubbers.team.data.entity.audit.Audit;
 import com.rubbers.team.data.entity.issue.Issue;
 
-import lombok.*;
-
-/**
- * Описывает контракт взаимодействия с модильным клиентом
- */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class Event {
-
-    @NonNull
-    @Builder.Default
-    private UUID eventID = UUID.randomUUID();
-
-    @NonNull
-    @Builder.Default
-    private LocalDateTime creationDate = LocalDateTime.now();
-
-    @NonNull
-    @Builder.Default
-    private EventStatus eventStatus = EventStatus.OK;
-
-    @NonNull
-    private UUID itemID;
-
-    private UUID taskID;
-
-    @Nullable
-    private Issue issue;
-
-    public enum EventStatus {
-        OK, ISSUE
-    }
+public interface AuditRepository extends JpaRepository<Audit, UUID> {
 }

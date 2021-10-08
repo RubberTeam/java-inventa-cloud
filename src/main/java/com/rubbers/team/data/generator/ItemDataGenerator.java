@@ -58,6 +58,7 @@ public class ItemDataGenerator {
             for (int i = 0; i < 5; i++) {
                 val temp = items.get(new Random().nextInt(100));
                 temp.setTaskID(task1.getTaskId());
+                temp.setTaskCurrentlyInventoried(false);
                 itemRepository.save(temp);
             }
 
@@ -69,30 +70,42 @@ public class ItemDataGenerator {
             for (int i = 0; i < 5; i++) {
                 val temp = items.get(new Random().nextInt((200 - 100) + 100));
                 temp.setTaskID(task2.getTaskId());
+                temp.setTaskCurrentlyInventoried(false);
                 itemRepository.save(temp);
             }
 
             val task3 = Task.builder()
                     .assignedDateTime(LocalDateTime.now())
-                    .taskStatus(TaskStatus.ASSIGNED)
+                    .taskStatus(TaskStatus.IN_PROGRESS)
                     .build();
             taskRepository.save(task3);
             for (int i = 0; i < 5; i++) {
                 val temp = items.get(new Random().nextInt((300 - 200) + 200));
                 temp.setTaskID(task3.getTaskId());
+                temp.setTaskCurrentlyInventoried(true);
                 itemRepository.save(temp);
             }
+            val doneItemTemp = items.get(new Random().nextInt((300 - 200) + 200));
+            doneItemTemp.setTaskID(task3.getTaskId());
+            doneItemTemp.setTaskCurrentlyInventoried(false);
+            itemRepository.save(doneItemTemp);
 
             val task4 = Task.builder()
-                    .assignedPerformer("no one")
-                    .taskStatus(TaskStatus.SCHEDULED)
+                    .creationDateTime(LocalDateTime.now().minusWeeks(1))
+                    .assignedDateTime(LocalDateTime.now().minusWeeks(1))
+                    .taskStatus(TaskStatus.ISSUE)
                     .build();
             taskRepository.save(task4);
             for (int i = 0; i < 5; i++) {
                 val temp = items.get(new Random().nextInt((300 - 200) + 200));
                 temp.setTaskID(task4.getTaskId());
+                temp.setTaskCurrentlyInventoried(false);
                 itemRepository.save(temp);
             }
+            val notDoneItemTemp = items.get(new Random().nextInt((300 - 200) + 200));
+            notDoneItemTemp.setTaskID(task4.getTaskId());
+            notDoneItemTemp.setTaskCurrentlyInventoried(true);
+            itemRepository.save(notDoneItemTemp);
         };
     }
 }

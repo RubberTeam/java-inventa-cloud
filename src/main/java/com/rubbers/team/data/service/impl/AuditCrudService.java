@@ -14,47 +14,23 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
  * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-package com.rubbers.team.data.entity.event;
+package com.rubbers.team.data.service.impl;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
+import org.vaadin.artur.helpers.CrudService;
 
-import com.rubbers.team.data.entity.issue.Issue;
+import com.rubbers.team.data.entity.audit.Audit;
+import com.rubbers.team.data.service.AuditRepository;
+import com.vaadin.flow.spring.annotation.SpringComponent;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-/**
- * Описывает контракт взаимодействия с модильным клиентом
- */
-@Data
-@Builder
+@SpringComponent
 @AllArgsConstructor
-@NoArgsConstructor
-public class Event {
+public class AuditCrudService extends CrudService<Audit, UUID> {
 
-    @NonNull
-    @Builder.Default
-    private UUID eventID = UUID.randomUUID();
-
-    @NonNull
-    @Builder.Default
-    private LocalDateTime creationDate = LocalDateTime.now();
-
-    @NonNull
-    @Builder.Default
-    private EventStatus eventStatus = EventStatus.OK;
-
-    @NonNull
-    private UUID itemID;
-
-    private UUID taskID;
-
-    @Nullable
-    private Issue issue;
-
-    public enum EventStatus {
-        OK, ISSUE
-    }
+    @Getter
+    private AuditRepository repository;
 }
