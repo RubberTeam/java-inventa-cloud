@@ -54,7 +54,7 @@ public class Event {
     @Nullable
     private Issue issue;
 
-    enum EventStatus {
+    public enum EventStatus {
         OK, ISSUE
     }
 }

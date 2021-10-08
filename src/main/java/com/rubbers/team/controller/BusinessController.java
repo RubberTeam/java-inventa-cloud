@@ -16,11 +16,16 @@
  */
 package com.rubbers.team.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
+import com.rubbers.team.data.entity.task.TaskStatus;
+import com.rubbers.team.data.service.impl.TaskCrudService;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +47,9 @@ public class BusinessController {
     private TaskService taskService;
 
     @Autowired
+    private TaskCrudService taskCrudService;
+
+    @Autowired
     private ItemCrudService itemCrudService;
 
     // @Autowired
@@ -55,8 +63,36 @@ public class BusinessController {
 
     @PostMapping("/update")
     public void update(@RequestBody @NotBlank final Event event) {
-        // eventRepository.save(event);
-        // taskService.update(task);
+        val item = itemCrudService.getRepository().findById(event.getItemID());
+        if (item.isPresent()) {
+            item.get().setTaskCurrentlyInventoried(false);
+            item.get().setItemLastUpdate(LocalDate.now());
+            itemCrudService.getRepository().save(item.get());
+        }
+
+        val task = taskCrudService.getRepository().findById(event.getTaskID());
+        if (task.isPresent()) {
+            if (task.get().getFirstActionDateTime() == null) {
+                task.get().setFirstActionDateTime(LocalDateTime.now());
+            }
+
+            if (Event.EventStatus.ISSUE.equals(event.getEventStatus())) {
+                task.get().setTaskStatus(TaskStatus.ISSUE);
+                taskCrudService.getRepository().save(task.get());
+            } else {
+                if (!TaskStatus.ISSUE.equals(task.get().getTaskStatus())) {
+                    task.get().setTaskStatus(TaskStatus.IN_PROGRESS);
+                    final int stillNeedToWork = task.get().getItems()
+                            .stream()
+                            .filter(Item::getTaskCurrentlyInventoried)
+                            .collect(Collectors.toList())
+                            .size();
+                    if (stillNeedToWork == 0) {
+                        task.get().setTaskStatus(TaskStatus.DONE);
+                    }
+                }
+            }
+        }
     }
 
     @ResponseBody

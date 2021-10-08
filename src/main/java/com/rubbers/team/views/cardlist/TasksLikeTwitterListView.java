@@ -127,7 +127,7 @@ public class TasksLikeTwitterListView extends Div {
             justStatus.addThemeVariants(ButtonVariant.LUMO_ERROR);
         }
 
-        final Span date = new Span(task.getCreationDateTime().format(DateTimeFormatter.ISO_DATE));
+        final Span date = new Span(task.getCreationDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         date.addClassName("date");
         header.add(name, email, date, justStatus);
 
