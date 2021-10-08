@@ -21,12 +21,12 @@ import java.util.Set;
 
 import javax.annotation.security.PermitAll;
 
-import com.rubbers.team.data.service.impl.AuditCrudService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemStatus;
+import com.rubbers.team.data.service.impl.AuditCrudService;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.TaskCrudService;
 import com.rubbers.team.data.service.impl.UserCrudService;
@@ -85,9 +85,9 @@ public class ListView extends Div {
     private Set<Item> selectedCandidatesForTask;
 
     public ListView(@Autowired final ItemCrudService itemCrudService,
-                    @Autowired final UserCrudService userCrudService,
-                    @Autowired final TaskCrudService taskCrudService,
-                    @Autowired final AuditCrudService auditCrudService) {
+            @Autowired final UserCrudService userCrudService,
+            @Autowired final TaskCrudService taskCrudService,
+            @Autowired final AuditCrudService auditCrudService) {
         this.itemCrudService = itemCrudService;
         this.userCrudService = userCrudService;
         this.taskCrudService = taskCrudService;
@@ -154,9 +154,9 @@ public class ListView extends Div {
                 .setHeader("serial")
                 .setAutoWidth(true);
         lastUpdateColumn = grid.addColumn(
-                        new LocalDateRenderer<>(
-                                Item::getItemLastUpdate,
-                                DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                new LocalDateRenderer<>(
+                        Item::getItemLastUpdate,
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                 .setTextAlign(ColumnTextAlign.CENTER)
                 .setComparator(Item::getItemLastUpdate)
                 .setResizable(true)
@@ -318,8 +318,7 @@ public class ListView extends Div {
                         userCrudService,
                         auditCrudService,
                         gridListDataView,
-                        lastSelectedItem
-                );
+                        lastSelectedItem);
                 itemDialog.open();
             }
         });
@@ -329,8 +328,7 @@ public class ListView extends Div {
                     userCrudService,
                     auditCrudService,
                     gridListDataView,
-                    null
-            );
+                    null);
             itemDialog.open();
         });
         val createTask = contextMenu.addItem("Создать новую задачу", event -> {
@@ -339,8 +337,7 @@ public class ListView extends Div {
                     userCrudService,
                     itemCrudService,
                     auditCrudService,
-                    selectedCandidatesForTask
-            );
+                    selectedCandidatesForTask);
             dialog.open();
         });
         val refresh = contextMenu.addItem("Обновить", event -> gridListDataView.refreshAll());

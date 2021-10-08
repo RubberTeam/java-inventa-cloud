@@ -16,6 +16,10 @@
  */
 package com.rubbers.team.views.audit;
 
+import javax.annotation.security.PermitAll;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.rubbers.team.data.entity.audit.Audit;
 import com.rubbers.team.data.service.impl.AuditCrudService;
 import com.rubbers.team.views.MainLayout;
@@ -25,10 +29,8 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.security.PermitAll;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Вьюха для событий аудита

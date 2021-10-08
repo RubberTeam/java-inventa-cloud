@@ -43,14 +43,15 @@ public class TaskDialog extends Dialog {
      *
      * @param taskCrudService нужен, чтобы через класс TaskForm сохранить в бд и обработать в той форме ошибки
      * @param userCrudService нужен, чтобы предоставить пользователей, на которых можно назначить и от кого назначить
-     * @param items           объекты для инвенторизации
+     * @param items объекты для инвенторизации
      */
     public TaskDialog(@NonNull final TaskCrudService taskCrudService,
-                      @NonNull final UserCrudService userCrudService,
-                      @NonNull final ItemCrudService itemCrudService,
-                      @NonNull final AuditCrudService auditCrudService,
-                      @NonNull final Set<Item> items) {
-        final TaskForm taskForm = new TaskForm(taskCrudService, itemCrudService, userCrudService, auditCrudService, items);
+            @NonNull final UserCrudService userCrudService,
+            @NonNull final ItemCrudService itemCrudService,
+            @NonNull final AuditCrudService auditCrudService,
+            @NonNull final Set<Item> items) {
+        final TaskForm taskForm =
+                new TaskForm(taskCrudService, itemCrudService, userCrudService, auditCrudService, items);
 
         final Button createTaskButton = new Button("Создать задачу", event -> {
             if (taskForm.validateAndSave()) {

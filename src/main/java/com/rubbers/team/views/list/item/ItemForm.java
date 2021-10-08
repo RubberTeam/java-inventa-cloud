@@ -61,10 +61,10 @@ public class ItemForm extends FormLayout {
     private final Item item;
 
     public ItemForm(@NonNull final ItemCrudService itemCrudService,
-                    @NonNull final UserCrudService userCrudService,
-                    @NonNull final AuditCrudService auditCrudService,
-                    @NonNull final GridListDataView<Item> gridListDataView,
-                    @Nullable final Item item) {
+            @NonNull final UserCrudService userCrudService,
+            @NonNull final AuditCrudService auditCrudService,
+            @NonNull final GridListDataView<Item> gridListDataView,
+            @Nullable final Item item) {
         this.itemCrudService = itemCrudService;
         this.gridListDataView = gridListDataView;
         this.auditCrudService = auditCrudService;
@@ -192,7 +192,7 @@ public class ItemForm extends FormLayout {
                 itemLastUpdate,
                 itemTaskID,
                 itemCategory
-                // itemIssue
+        // itemIssue
         );
     }
 
@@ -206,8 +206,7 @@ public class ItemForm extends FormLayout {
                 auditCrudService.getRepository().save(new Audit(
                         UUID.randomUUID(),
                         LocalDateTime.now(),
-                        "Бизнес-администратором изменен объект ID: " + item.getItemId()
-                ));
+                        "Бизнес-администратором изменен объект ID: " + item.getItemId()));
             } else {
                 final Item clearItem = Item.builder().build();
                 binder.writeBean(clearItem);
@@ -217,8 +216,7 @@ public class ItemForm extends FormLayout {
                 auditCrudService.getRepository().save(new Audit(
                         UUID.randomUUID(),
                         LocalDateTime.now(),
-                        "Бизнес-администратором создан новый объект ID: " + clearItem.getItemId()
-                ));
+                        "Бизнес-администратором создан новый объект ID: " + clearItem.getItemId()));
             }
             final Notification notification = new Notification(
                     item == null ? "Объект успешно создан" : "Объект успешно обновлен",

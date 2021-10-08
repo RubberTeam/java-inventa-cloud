@@ -24,17 +24,17 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
-import com.rubbers.team.data.entity.audit.Audit;
-import com.rubbers.team.data.service.impl.AuditCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.rubbers.team.controller.service.TaskService;
+import com.rubbers.team.data.entity.audit.Audit;
 import com.rubbers.team.data.entity.event.Event;
 import com.rubbers.team.data.entity.item.Item;
 import com.rubbers.team.data.entity.item.ItemCategory;
 import com.rubbers.team.data.entity.task.Task;
 import com.rubbers.team.data.entity.task.TaskStatus;
+import com.rubbers.team.data.service.impl.AuditCrudService;
 import com.rubbers.team.data.service.impl.ItemCrudService;
 import com.rubbers.team.data.service.impl.TaskCrudService;
 
@@ -71,9 +71,7 @@ public class BusinessController {
                         UUID.randomUUID(),
                         LocalDateTime.now(),
                         "Пользователь мобильного клиента сообщил о состоянии объекта ID: "
-                                + event.getItemID() + " в задаче ID: " + event.getTaskID()
-                )
-        );
+                                + event.getItemID() + " в задаче ID: " + event.getTaskID()));
 
         val item = itemCrudService.getRepository().findById(event.getItemID());
         if (item.isPresent()) {

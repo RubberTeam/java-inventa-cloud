@@ -45,11 +45,12 @@ public class ItemDialog extends Dialog {
      * @param item объект для инвенторизации, если null, то форма это диалог для создания
      */
     public ItemDialog(@NonNull final ItemCrudService itemCrudService,
-                      @NonNull final UserCrudService userCrudService,
-                      @NonNull final AuditCrudService auditCrudService,
-                      @NonNull final GridListDataView<Item> gridListDataView,
-                      @Nullable final Item item) {
-        final ItemForm itemForm = new ItemForm(itemCrudService, userCrudService, auditCrudService, gridListDataView, item);
+            @NonNull final UserCrudService userCrudService,
+            @NonNull final AuditCrudService auditCrudService,
+            @NonNull final GridListDataView<Item> gridListDataView,
+            @Nullable final Item item) {
+        final ItemForm itemForm =
+                new ItemForm(itemCrudService, userCrudService, auditCrudService, gridListDataView, item);
 
         final Button createTaskButton = new Button(
                 item == null ? "Создать" : "Сохранить",

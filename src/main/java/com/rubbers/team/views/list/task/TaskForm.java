@@ -60,13 +60,13 @@ public class TaskForm extends FormLayout {
      * Дефолтный конструктор формы
      *
      * @param taskCrudService сервис, куда сохраним созданный таск
-     * @param items           список ценностных объектов для бизнесс-процесса
+     * @param items список ценностных объектов для бизнесс-процесса
      */
     public TaskForm(final TaskCrudService taskCrudService,
-                    final ItemCrudService itemCrudService,
-                    final UserCrudService userCrudService,
-                    final AuditCrudService auditCrudService,
-                    final Set<Item> items) {
+            final ItemCrudService itemCrudService,
+            final UserCrudService userCrudService,
+            final AuditCrudService auditCrudService,
+            final Set<Item> items) {
         addClassName("task-form");
 
         this.taskCrudService = taskCrudService;
@@ -120,8 +120,8 @@ public class TaskForm extends FormLayout {
         final ComboBox<Integer> fiscalYearPicker = new ComboBox<>(
                 "Фискальный год",
                 IntStream.range(
-                                LocalDate.now().getYear() - 99,
-                                LocalDate.now().getYear() + 1).boxed()
+                        LocalDate.now().getYear() - 99,
+                        LocalDate.now().getYear() + 1).boxed()
                         .collect(Collectors.toList()));
         fiscalYearPicker.setValue(LocalDate.now().getYear());
         binder.forField(fiscalYearPicker).bind(Task::getFiscalYear, Task::setFiscalYear);
@@ -162,8 +162,7 @@ public class TaskForm extends FormLayout {
             auditCrudService.getRepository().save(new Audit(
                     UUID.randomUUID(),
                     LocalDateTime.now(),
-                    "Бизнес-администратором создана новая задача ID: " + clearItem.getTaskId()
-            ));
+                    "Бизнес-администратором создана новая задача ID: " + clearItem.getTaskId()));
             items.forEach(item -> {
                 item.setTaskID(clearItem.getTaskId());
                 item.setTaskCurrentlyInventoried(true);
@@ -171,8 +170,8 @@ public class TaskForm extends FormLayout {
                 auditCrudService.getRepository().save(new Audit(
                         UUID.randomUUID(),
                         LocalDateTime.now(),
-                        "Бизнес-администратор привязал объект ID: " + item.getItemId() + " к задаче ID: " + clearItem.getTaskId()
-                ));
+                        "Бизнес-администратор привязал объект ID: " + item.getItemId() + " к задаче ID: "
+                                + clearItem.getTaskId()));
             });
             final Notification notification = new Notification(
                     "Задача успешно создана",
